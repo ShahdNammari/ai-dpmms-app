@@ -85,6 +85,7 @@ Patient's Question:
 "{req.question}"
 
 Instructions:
+- Always respond in the same language the patient used in their question
 - Use simple, friendly language — no medical jargon
 - Personalize your answer using the patient's profile above
 - Do NOT prescribe medications or specific dosages
@@ -176,6 +177,7 @@ Doctor's Question:
 "{req.question}"
 
 Instructions:
+- Always respond in the same language the doctor used in their question
 - Use clear, professional clinical language appropriate for a doctor
 - You may discuss adherence patterns, medication interactions, and clinical insights
 - Reference specific patients by name when relevant to the question
