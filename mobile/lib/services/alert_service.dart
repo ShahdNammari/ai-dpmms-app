@@ -3,9 +3,11 @@ import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
+import 'report_service.dart';
+import 'settings_service.dart';
 
 class AlertService {
-  static const _baseUrl = 'http://172.20.10.3:8000';
+  static const _baseUrl = 'https://ai-dpmms-app.onrender.com';
 
   // In-memory guard: prevents race-condition duplicates within a single session.
   static final _inFlight = <String>{};
@@ -46,13 +48,19 @@ class AlertService {
       final conditions =
           List<String>.from((userData['conditions'] as List?) ?? []);
 
-      // ── Compute adherence stats (last 7 days) ─────────────────────────────
-      int total = 0, taken = 0, missed = 0;
+      // No medications → nothing to alert about
+      if (medications.isEmpty) return;
+
+      // ── Adherence: schedule-aware (matches the doctor home card) ─────────
+      final adherence = await ReportService().getAdherenceLast7Days(uid);
+
+      // ── Consecutive missed days (unrecorded past days count as missed) ────
       int consecutiveMissed = 0;
       bool countingConsecutive = true;
+      final checkToday = DateTime(today.year, today.month, today.day);
 
-      for (int i = 0; i < 7; i++) {
-        final date = DateTime.now().subtract(Duration(days: i));
+      for (int i = 1; i <= 7 && countingConsecutive; i++) {
+        final date = checkToday.subtract(Duration(days: i));
         final dateStr = DateFormat('yyyy-MM-dd').format(date);
 
         final dayDoc = await firestore
@@ -62,30 +70,36 @@ class AlertService {
             .doc(dateStr)
             .get();
 
-        if (!dayDoc.exists) continue;
+        bool anyTaken = false;
+        bool anyMissed = false;
 
-        final dayData = dayDoc.data() ?? {};
-        bool anyMissedToday = false;
-
-        for (final value in dayData.values) {
-          if (value is Map) {
-            final status = value['status'] as String? ?? '';
-            if (status == 'taken') {
-              total++;
-              taken++;
-              countingConsecutive = false;
-            } else if (status == 'missed' || status == 'skipped') {
-              total++;
-              missed++;
-              anyMissedToday = true;
+        if (!dayDoc.exists) {
+          anyMissed = true; // unrecorded past day = missed
+        } else {
+          final dayData = dayDoc.data() ?? {};
+          for (final value in dayData.values) {
+            if (value is Map) {
+              final status = value['status'] as String? ?? '';
+              if (status == 'taken') {
+                anyTaken = true;
+              } else if (status == 'missed' || status == 'skipped') {
+                anyMissed = true;
+              }
             }
           }
         }
 
-        if (countingConsecutive && anyMissedToday) consecutiveMissed++;
+        if (anyTaken) {
+          countingConsecutive = false;
+        } else if (anyMissed) {
+          consecutiveMissed++;
+        }
       }
 
-      if (total == 0) return;
+      // Approximate raw counts for the backend API
+      const approxTotal = 7;
+      final approxTaken = (adherence * approxTotal).round();
+      final approxMissed = approxTotal - approxTaken;
 
       // ── Try backend /analyze (5-second timeout) ───────────────────────────
       bool handledByBackend = false;
@@ -98,9 +112,9 @@ class AlertService {
                 'patient_name': patientName,
                 'medications': medications,
                 'conditions': conditions,
-                'total_doses': total,
-                'taken_doses': taken,
-                'missed_doses': missed,
+                'total_doses': approxTotal,
+                'taken_doses': approxTaken,
+                'missed_doses': approxMissed,
                 'consecutive_missed': consecutiveMissed,
               }),
             )
@@ -124,19 +138,17 @@ class AlertService {
       if (handledByBackend) return;
 
       // ── Client-side fallback when backend is unavailable ──────────────────
-      // Same thresholds as the backend (chat.py /analyze rules)
-      final adherence = taken / total;
-
+      final lang = SettingsService.instance.locale.languageCode;
       if (adherence < 0.5 || consecutiveMissed >= 3) {
         await _writeAlert(
           firestore, uid, patientName,
-          'Critical: ${(adherence * 100).round()}% adherence over the last days',
+          _fallbackMessage(lang, adherence, 'critical'),
           'critical',
         );
       } else if (adherence < 0.7 || consecutiveMissed >= 2) {
         await _writeAlert(
           firestore, uid, patientName,
-          'Low adherence: ${(adherence * 100).round()}% over the last days',
+          _fallbackMessage(lang, adherence, 'warning'),
           'warning',
         );
       }
@@ -145,6 +157,24 @@ class AlertService {
       // Silent — never interrupt the patient's dose logging flow
     } finally {
       _inFlight.remove(uid);
+    }
+  }
+
+  static String _fallbackMessage(String lang, double adherence, String severity) {
+    final pct = (adherence * 100).round();
+    switch (lang) {
+      case 'ar':
+        return severity == 'critical'
+            ? 'حرج: $pct% التزام بالدواء خلال الأيام الأخيرة'
+            : 'التزام منخفض: $pct% خلال الأيام الأخيرة';
+      case 'he':
+        return severity == 'critical'
+            ? 'קריטי: עמידה של $pct% בטיפול בימים האחרונים'
+            : 'עמידה נמוכה: $pct% בימים האחרונים';
+      default:
+        return severity == 'critical'
+            ? 'Critical: $pct% adherence over the last days'
+            : 'Low adherence: $pct% over the last days';
     }
   }
 
