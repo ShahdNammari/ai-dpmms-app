@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -108,7 +108,7 @@ class _MedicationFormScreenState extends State<MedicationFormScreen> {
 
     final confirmed = await showModalBottomSheet<bool>(
       context: context,
-      backgroundColor: isDark ? const Color(0xFF1E1E2E) : Colors.white,
+      backgroundColor: isDark ? const Color(0xFF1E2028) : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -265,7 +265,7 @@ class _MedicationFormScreenState extends State<MedicationFormScreen> {
       final eff = widget.effectiveDate;
 
       if (endDate != null && eff.isAfter(endDate)) {
-        // Medication already ended — remove the document directly.
+        // Medication already ended ” remove the document directly.
         await FirebaseFirestore.instance
             .collection('users')
             .doc(widget.uid)
@@ -565,7 +565,7 @@ class _MedicationFormScreenState extends State<MedicationFormScreen> {
         color: surface,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: isDark ? const Color(0xFF3A3A5C) : Colors.grey.shade200,
+          color: isDark ? const Color(0xFF2A2D3A) : Colors.grey.shade200,
         ),
       ),
       child: Column(
@@ -672,7 +672,7 @@ class _MedicationFormScreenState extends State<MedicationFormScreen> {
                 color: selected
                     ? _dark
                     : (isDark
-                        ? const Color(0xFF3A3A5C)
+                        ? const Color(0xFF2A2D3A)
                         : Colors.grey.shade300),
                 width: 1.5,
               ),
@@ -709,7 +709,7 @@ class _MedicationFormScreenState extends State<MedicationFormScreen> {
           color: surface,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: isDark ? const Color(0xFF3A3A5C) : Colors.grey.shade200,
+            color: isDark ? const Color(0xFF2A2D3A) : Colors.grey.shade200,
           ),
         ),
         child: Row(
@@ -771,7 +771,7 @@ class _MedicationFormScreenState extends State<MedicationFormScreen> {
               style: OutlinedButton.styleFrom(
                 side: BorderSide(
                   color: isDark
-                      ? const Color(0xFF3A3A5C)
+                      ? const Color(0xFF2A2D3A)
                       : Colors.grey.shade300,
                 ),
                 shape: RoundedRectangleBorder(

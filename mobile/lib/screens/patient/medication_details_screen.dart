@@ -1,4 +1,4 @@
-import 'dart:ui';
+﻿import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../l10n/app_strings.dart';
 import '../../models/medication.dart';
@@ -541,7 +541,7 @@ class _SkeletonActivityRowsState extends State<_SkeletonActivityRows>
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF2A2A4A) : const Color(0xFFE2E8F0),
+        color: isDark ? const Color(0xFF252830) : const Color(0xFFE2E8F0),
         borderRadius: BorderRadius.circular(radius),
       ),
     );
@@ -568,7 +568,7 @@ class _SkeletonActivityRowsState extends State<_SkeletonActivityRows>
                     height: 28,
                     decoration: BoxDecoration(
                       color: isDark
-                          ? const Color(0xFF2A2A4A)
+                          ? const Color(0xFF252830)
                           : const Color(0xFFE2E8F0),
                       shape: BoxShape.circle,
                     ),

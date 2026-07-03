@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../../l10n/app_strings.dart';
 import '../../services/chat_service.dart';
 
@@ -116,7 +116,7 @@ class _AiScreenState extends State<AiScreen> {
   }
 }
 
-// ── Data model ────────────────────────────────────────────────────────────────
+//  Data model 
 
 class _ChatMessage {
   final String text;
@@ -132,7 +132,7 @@ class _ChatMessage {
   });
 }
 
-// ── Message bubble ────────────────────────────────────────────────────────────
+//  Message bubble 
 
 class _MessageBubble extends StatelessWidget {
   final _ChatMessage message;
@@ -197,7 +197,7 @@ class _MessageBubble extends StatelessWidget {
   }
 }
 
-// ── Typing indicator ──────────────────────────────────────────────────────────
+//  Typing indicator 
 
 class _TypingIndicator extends StatefulWidget {
   const _TypingIndicator();
@@ -318,7 +318,7 @@ class _DotState extends State<_Dot> with SingleTickerProviderStateMixin {
   }
 }
 
-// ── Input bar ─────────────────────────────────────────────────────────────────
+//  Input bar 
 
 class _InputBar extends StatelessWidget {
   final TextEditingController controller;

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -118,7 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
       barrierDismissible: true,
       builder: (ctx) {
         return Dialog(
-          backgroundColor: isDark ? const Color(0xFF1E1E2E) : Colors.white,
+          backgroundColor: isDark ? const Color(0xFF1E2028) : Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(18),
           ),
@@ -359,7 +359,7 @@ class _NiceField extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final labelColor = isDark ? Colors.white : const Color(0xFF0F172A);
-    final fillColor = isDark ? const Color(0xFF1E1E2E) : Colors.white;
+    final fillColor = isDark ? const Color(0xFF1E2028) : Colors.white;
     final hintColor = isDark ? Colors.white38 : const Color(0xFF94A3B8);
     final textColor = isDark ? Colors.white : const Color(0xFF0F172A);
 
@@ -411,9 +411,9 @@ class _RoleTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bgColor = isDark ? const Color(0xFF2A2A4A) : const Color(0xFFF8FAFC);
+    final bgColor = isDark ? const Color(0xFF252830) : const Color(0xFFF8FAFC);
     final borderColor =
-        isDark ? const Color(0xFF3A3A5C) : const Color(0xFFE2E8F0);
+        isDark ? const Color(0xFF2A2D3A) : const Color(0xFFE2E8F0);
     final iconColor = isDark ? Colors.white : const Color(0xFF0F172A);
     final textColor = isDark ? Colors.white : const Color(0xFF0F172A);
     final chevronColor =

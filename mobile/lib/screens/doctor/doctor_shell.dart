@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -228,7 +228,7 @@ class _DoctorShellState extends State<DoctorShell> {
                 padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF1E1E2E) : Colors.white,
+                    color: isDark ? const Color(0xFF1E2028) : Colors.white,
                     borderRadius: BorderRadius.circular(28),
                     boxShadow: [
                       BoxShadow(
@@ -317,7 +317,7 @@ class _NavItem extends StatelessWidget {
         decoration: BoxDecoration(
           color: selected
               ? (isDark
-                  ? const Color(0xFF2A2A4A)
+                  ? const Color(0xFF252830)
                   : const Color(0xFFE8EEF9))
               : Colors.transparent,
           borderRadius: BorderRadius.circular(22),

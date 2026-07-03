@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -123,9 +123,9 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.dark,
         primary: kPrimary,
         secondary: kAccent,
-        surface: const Color(0xFF1E1E2E),
+        surface: const Color(0xFF1E2028),
       ),
-      scaffoldBackgroundColor: const Color(0xFF12121F),
+      scaffoldBackgroundColor: const Color(0xFF16181D),
       appBarTheme: const AppBarTheme(
         centerTitle: true,
         elevation: 0,
@@ -134,7 +134,7 @@ class MyApp extends StatelessWidget {
       ),
       cardTheme: CardThemeData(
         elevation: 3,
-        color: const Color(0xFF1E1E2E),
+        color: const Color(0xFF1E2028),
         shadowColor: Colors.black.withValues(alpha: 0.3),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(18),
@@ -143,16 +143,16 @@ class MyApp extends StatelessWidget {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: const Color(0xFF1E1E2E),
+        fillColor: const Color(0xFF1E2028),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: Color(0xFF3A3A5C)),
+          borderSide: const BorderSide(color: Color(0xFF2A2D3A)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: Color(0xFF3A3A5C)),
+          borderSide: const BorderSide(color: Color(0xFF2A2D3A)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
@@ -170,10 +170,10 @@ class MyApp extends StatelessWidget {
       ),
       checkboxTheme: CheckboxThemeData(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
-        side: const BorderSide(color: Color(0xFF3A3A5C)),
+        side: const BorderSide(color: Color(0xFF2A2D3A)),
       ),
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: const Color(0xFF1E1E2E),
+        backgroundColor: const Color(0xFF1E2028),
         elevation: 3,
         indicatorColor: kPrimary.withValues(alpha: 0.22),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {

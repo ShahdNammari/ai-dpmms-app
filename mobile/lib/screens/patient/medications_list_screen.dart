@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -200,7 +200,7 @@ class _MedicationsListScreenState extends State<MedicationsListScreen> {
                         borderRadius: BorderRadius.circular(14),
                         border: Border.all(
                           color: isDark
-                              ? const Color(0xFF3A3A5C)
+                              ? const Color(0xFF2A2D3A)
                               : const Color(0xFFE2E8F0),
                         ),
                       ),
@@ -213,8 +213,8 @@ class _MedicationsListScreenState extends State<MedicationsListScreen> {
                           hintStyle: TextStyle(
                             color: onSurface.withValues(alpha: 0.4),
                           ),
-                          prefixIcon: const Icon(Icons.search,
-                              color: Color(0xFF1E3A8A)),
+                          prefixIcon: Icon(Icons.search,
+                              color: isDark ? Colors.white : const Color(0xFF1E3A8A)),
                           border: InputBorder.none,
                           contentPadding:
                               const EdgeInsets.symmetric(vertical: 12),
@@ -332,7 +332,7 @@ class _MedicationsListScreenState extends State<MedicationsListScreen> {
                                       : const Color(0xFFE8EEF9),
                                   shape: BoxShape.circle,
                                   border: Border.all(
-                                      color: const Color(0xFF1E3A8A)),
+                                      color: isDark ? Colors.white : const Color(0xFF1E3A8A)),
                                 ),
                                 selectedDecoration: BoxDecoration(
                                   color: isDark
@@ -377,7 +377,7 @@ class _MedicationsListScreenState extends State<MedicationsListScreen> {
                                       horizontal: 8, vertical: 3),
                                   decoration: BoxDecoration(
                                     color: isDark
-                                        ? const Color(0xFF3A3A5C)
+                                        ? const Color(0xFF2A2D3A)
                                         : const Color(0xFFF1F5F9),
                                     borderRadius: BorderRadius.circular(8),
                                     border: Border.all(
@@ -559,7 +559,7 @@ class _MedicationCard extends StatelessWidget {
 
     final nameColor = isReadOnly
         ? const Color(0xFF94A3B8)
-        : const Color(0xFF1E3A8A);
+        : (isDark ? Colors.white : const Color(0xFF1E3A8A));
 
     return Container(
       width: double.infinity,
@@ -569,7 +569,7 @@ class _MedicationCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
           color: isDark
-              ? const Color(0xFF3A3A5C)
+              ? const Color(0xFF2A2D3A)
               : const Color(0xFFE2E8F0),
         ),
         boxShadow: [
@@ -709,7 +709,7 @@ class _SkeletonMedsListState extends State<_SkeletonMedsList>
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF2A2A4A) : const Color(0xFFE2E8F0),
+        color: isDark ? const Color(0xFF252830) : const Color(0xFFE2E8F0),
         borderRadius: BorderRadius.circular(radius),
       ),
     );
@@ -718,7 +718,7 @@ class _SkeletonMedsListState extends State<_SkeletonMedsList>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardBg = isDark ? const Color(0xFF1E1E2E) : Colors.white;
+    final cardBg = isDark ? const Color(0xFF1E2028) : Colors.white;
 
     return AnimatedBuilder(
       animation: _opacity,
@@ -752,7 +752,7 @@ class _SkeletonMedsListState extends State<_SkeletonMedsList>
                           height: 32,
                           decoration: BoxDecoration(
                             color: isDark
-                                ? const Color(0xFF2A2A4A)
+                                ? const Color(0xFF252830)
                                 : const Color(0xFFE2E8F0),
                             shape: BoxShape.circle,
                           ),
@@ -782,7 +782,7 @@ class _SkeletonMedsListState extends State<_SkeletonMedsList>
                         height: 44,
                         decoration: BoxDecoration(
                           color: isDark
-                              ? const Color(0xFF2A2A4A)
+                              ? const Color(0xFF252830)
                               : const Color(0xFFE2E8F0),
                           shape: BoxShape.circle,
                         ),

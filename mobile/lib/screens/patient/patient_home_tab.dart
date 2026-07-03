@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import 'package:ai_dpmms_mobile/services/app_refresh.dart';
@@ -185,7 +185,7 @@ class _PatientHomeTabState extends State<PatientHomeTab> {
     showModalBottomSheet(
       context: context,
       backgroundColor:
-          isDark ? const Color(0xFF1E1E2E) : Colors.white,
+          isDark ? const Color(0xFF1E2028) : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
       ),
@@ -214,10 +214,10 @@ class _PatientHomeTabState extends State<PatientHomeTab> {
               const SizedBox(height: 18),
               const ListTile(
                   leading: Icon(Icons.email_outlined),
-                  title: Text('support@ai-dpmms.com')),
+                  title: Text('sh.m.nammari02@gmail.com')),
               const ListTile(
                   leading: Icon(Icons.phone_outlined),
-                  title: Text('+970 000 000 000')),
+                  title: Text('+970 50 683 1577')),
             ],
           ),
         );
@@ -370,7 +370,7 @@ class _PatientHomeTabState extends State<PatientHomeTab> {
                                 minHeight: 16,
                                 value: progress,
                                 backgroundColor: isDark
-                                    ? const Color(0xFF3A3A5C)
+                                    ? const Color(0xFF2A2D3A)
                                     : const Color(0xFF94A3B8),
                                 valueColor:
                                     const AlwaysStoppedAnimation(
@@ -464,18 +464,18 @@ class _PatientHomeTabState extends State<PatientHomeTab> {
                           takeIconColor = const Color(0xFF9AA0AA);
                           takeTextColor = const Color(0xFF9AA0AA);
                         } else {
-                          mainColor = const Color(0xFF1E3A8A);
+                          mainColor = isDark ? Colors.white : const Color(0xFF1E3A8A);
                           label = s.statusScheduled;
                           skipBgColor = isDark
                               ? const Color(0xFF1E3A8A).withValues(alpha: 0.25)
                               : const Color(0xFFDBEAFE);
-                          skipIconColor = const Color(0xFF1E3A8A);
-                          skipTextColor = const Color(0xFF1E3A8A);
+                          skipIconColor = isDark ? Colors.white : const Color(0xFF1E3A8A);
+                          skipTextColor = isDark ? Colors.white : const Color(0xFF1E3A8A);
                           takeBgColor = isDark
                               ? const Color(0xFF1E3A8A).withValues(alpha: 0.25)
                               : const Color(0xFFDBEAFE);
-                          takeIconColor = const Color(0xFF1E3A8A);
-                          takeTextColor = const Color(0xFF1E3A8A);
+                          takeIconColor = isDark ? Colors.white : const Color(0xFF1E3A8A);
+                          takeTextColor = isDark ? Colors.white : const Color(0xFF1E3A8A);
                         }
 
                         return Padding(
@@ -656,7 +656,7 @@ class _PatientHomeTabState extends State<PatientHomeTab> {
   }
 }
 
-// ── Action button ──────────────────────────────────────────────────────────
+// ”” Action button ””””””””””””””””””””””””””””””””””””””””””””””””””””””””””
 
 class _ActionCircleButton extends StatelessWidget {
   final IconData icon;
@@ -736,7 +736,7 @@ class _SkeletonHomeContentState extends State<_SkeletonHomeContent>
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF2A2A4A) : const Color(0xFFE2E8F0),
+        color: isDark ? const Color(0xFF252830) : const Color(0xFFE2E8F0),
         borderRadius: BorderRadius.circular(radius),
       ),
     );
@@ -745,7 +745,7 @@ class _SkeletonHomeContentState extends State<_SkeletonHomeContent>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardBg = isDark ? const Color(0xFF1E1E2E) : Colors.white;
+    final cardBg = isDark ? const Color(0xFF1E2028) : Colors.white;
 
     return AnimatedBuilder(
       animation: _opacity,
@@ -812,14 +812,14 @@ class _SkeletonDoseCard extends StatelessWidget {
         width: width,
         height: height,
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF2A2A4A) : const Color(0xFFE2E8F0),
+          color: isDark ? const Color(0xFF252830) : const Color(0xFFE2E8F0),
           borderRadius: BorderRadius.circular(radius),
         ),
       );
 
   @override
   Widget build(BuildContext context) {
-    final cardBg = isDark ? const Color(0xFF1E1E2E) : Colors.white;
+    final cardBg = isDark ? const Color(0xFF1E2028) : Colors.white;
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
@@ -833,7 +833,7 @@ class _SkeletonDoseCard extends StatelessWidget {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF2A2A4A) : const Color(0xFFE2E8F0),
+              color: isDark ? const Color(0xFF252830) : const Color(0xFFE2E8F0),
               shape: BoxShape.circle,
             ),
           ),

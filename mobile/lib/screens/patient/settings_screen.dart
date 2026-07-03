@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 
 import '../../l10n/app_strings.dart';
 import '../../services/settings_service.dart';
@@ -16,7 +16,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   static const Color _primary = Color(0xFF1E3A8A);
 
-  // ── helpers ─────────────────────────────────────────────────────────────
+  // helpers
 
   bool get _isDark {
     final mode = _settings.themeMode;
@@ -25,7 +25,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return MediaQuery.platformBrightnessOf(context) == Brightness.dark;
   }
 
-  // ── section / tile builders ─────────────────────────────────────────────
+  // section / tile builders
 
   Widget _section(String title) {
     return Padding(
@@ -43,7 +43,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Widget _card({required List<Widget> children}) {
-    final cardColor = _isDark ? const Color(0xFF1E1E2E) : Colors.white;
+    final cardColor = _isDark ? const Color(0xFF1E2028) : Colors.white;
     return Container(
       decoration: BoxDecoration(
         color: cardColor,
@@ -110,7 +110,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  // ── pickers ──────────────────────────────────────────────────────────────
+  // pickers
 
   void _showThemePicker() {
     showModalBottomSheet(
@@ -136,13 +136,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
     ).then((_) => setState(() {}));
   }
 
-  // ── build ─────────────────────────────────────────────────────────────────
+  // build
 
   @override
   Widget build(BuildContext context) {
     final s = S.of(context);
     final isRtl = _settings.isRtl;
-    final bgColor = _isDark ? const Color(0xFF12121F) : const Color(0xFFF3F6FB);
+    final bgColor = _isDark ? const Color(0xFF16181D) : const Color(0xFFF3F6FB);
 
     final themeLabel = switch (_settings.themeMode) {
       ThemeMode.light => s.themeLight,
@@ -157,8 +157,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     };
 
     final langLabel = switch (_settings.locale.languageCode) {
-      'ar' => 'العربية',
-      'he' => 'עברית',
+      'ar' => 'Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©',
+      'he' => '×¢×‘×¨×™×ª',
       _ => 'English',
     };
 
@@ -190,7 +190,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         body: ListView(
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 32),
           children: [
-            // ── Appearance ──────────────────────────────────────
+            // Appearance
             _section(s.appearanceSection),
             _card(children: [
               _tile(
@@ -211,7 +211,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ]),
 
-            // ── Language ─────────────────────────────────────────
+            // Language
             _section(s.languageSection),
             _card(children: [
               _tile(
@@ -224,7 +224,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ]),
 
-            // ── Privacy & Security ────────────────────────────────
+            // Privacy & Security
             _section(s.securitySection),
             _card(children: [
               _tile(
@@ -246,7 +246,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 }
 
-// ── Shared bottom-sheet base ───────────────────────────────────────────────
+// Shared bottom-sheet base
 
 class _SheetBase extends StatelessWidget {
   final String title;
@@ -262,7 +262,7 @@ class _SheetBase extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final sheetColor = isDark ? const Color(0xFF1E1E2E) : Colors.white;
+    final sheetColor = isDark ? const Color(0xFF1E2028) : Colors.white;
     final isRtl = settings.isRtl;
 
     return Directionality(
@@ -336,7 +336,7 @@ class _OptionTile extends StatelessWidget {
   }
 }
 
-// ── Theme picker ──────────────────────────────────────────────────────────
+// Theme picker
 
 class _ThemePickerSheet extends StatefulWidget {
   final SettingsService settings;
@@ -394,7 +394,7 @@ class _ThemePickerSheetState extends State<_ThemePickerSheet> {
   }
 }
 
-// ── Font size picker ──────────────────────────────────────────────────────
+// Font size picker
 
 class _FontSizePickerSheet extends StatefulWidget {
   final SettingsService settings;
@@ -501,7 +501,7 @@ class _FontPreviewRow extends StatelessWidget {
   }
 }
 
-// ── Language picker ───────────────────────────────────────────────────────
+// Language picker
 
 class _LanguagePickerSheet extends StatefulWidget {
   final SettingsService settings;
@@ -514,11 +514,11 @@ class _LanguagePickerSheet extends StatefulWidget {
 class _LanguagePickerSheetState extends State<_LanguagePickerSheet> {
   late String _selectedCode;
 
-  // Native name • English name  (intentionally NOT translated)
+  // Native name â€¢ English name  (intentionally NOT translated)
   static const _langs = [
-    (code: 'en', display: 'English  •  English'),
-    (code: 'ar', display: 'العربية  •  Arabic'),
-    (code: 'he', display: 'עברית  •  Hebrew'),
+    (code: 'en', display: 'English  â€¢  English'),
+    (code: 'ar', display: 'Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©  â€¢  Arabic'),
+    (code: 'he', display: '×¢×‘×¨×™×ª  â€¢  Hebrew'),
   ];
 
   @override
@@ -548,7 +548,7 @@ class _LanguagePickerSheetState extends State<_LanguagePickerSheet> {
   }
 }
 
-// ── Pill badge ─────────────────────────────────────────────────────────────
+// Pill badge
 
 class _PillBadge extends StatelessWidget {
   final String label;

@@ -1,4 +1,4 @@
-import 'dart:convert';
+﻿import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -24,7 +24,7 @@ class AlertService {
 
       final firestore = FirebaseFirestore.instance;
 
-      // ── Cooldown: max 1 alert per patient per day ─────────────────────────
+      //  Cooldown: max 1 alert per patient per day 
       final today = DateTime.now();
       final midnight = DateTime(today.year, today.month, today.day);
 
@@ -37,7 +37,7 @@ class AlertService {
 
       if (existing.docs.isNotEmpty) return;
 
-      // ── Fetch patient profile ─────────────────────────────────────────────
+      //  Fetch patient profile 
       final userDoc = await firestore.collection('users').doc(uid).get();
       final userData = userDoc.data() ?? {};
       final patientName = (userData['name'] as String?)?.trim().isNotEmpty == true
@@ -51,10 +51,10 @@ class AlertService {
       // No medications → nothing to alert about
       if (medications.isEmpty) return;
 
-      // ── Adherence: schedule-aware (matches the doctor home card) ─────────
+      //  Adherence: schedule-aware (matches the doctor home card) 
       final adherence = await ReportService().getAdherenceLast7Days(uid);
 
-      // ── Consecutive missed days (unrecorded past days count as missed) ────
+      //  Consecutive missed days (unrecorded past days count as missed) 
       int consecutiveMissed = 0;
       bool countingConsecutive = true;
       final checkToday = DateTime(today.year, today.month, today.day);
@@ -101,7 +101,7 @@ class AlertService {
       final approxTaken = (adherence * approxTotal).round();
       final approxMissed = approxTotal - approxTaken;
 
-      // ── Try backend /analyze (5-second timeout) ───────────────────────────
+      //  Try backend /analyze (5-second timeout) 
       bool handledByBackend = false;
       try {
         final response = await http
@@ -137,22 +137,16 @@ class AlertService {
 
       if (handledByBackend) return;
 
-      // ── Client-side fallback when backend is unavailable ──────────────────
+      //  Client-side fallback when backend is unavailable 
       final lang = SettingsService.instance.locale.languageCode;
-      if (adherence < 0.5 || consecutiveMissed >= 3) {
+      if (adherence <= 0.5) {
         await _writeAlert(
           firestore, uid, patientName,
           _fallbackMessage(lang, adherence, 'critical'),
           'critical',
         );
-      } else if (adherence < 0.7 || consecutiveMissed >= 2) {
-        await _writeAlert(
-          firestore, uid, patientName,
-          _fallbackMessage(lang, adherence, 'warning'),
-          'warning',
-        );
       }
-      // else: adherence >= 70% and no consecutive misses — no alert needed
+      // adherence > 50% → no alert needed
     } catch (_) {
       // Silent — never interrupt the patient's dose logging flow
     } finally {

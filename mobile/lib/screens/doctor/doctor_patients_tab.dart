@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'dart:math' show min;
@@ -40,12 +40,14 @@ class _PatientInfo {
   final int medicationCount;
   final double adherence;
   final DateTime? lastActivity;
+  final int daysSinceLastDose;
 
   const _PatientInfo({
     required this.uid,
     required this.name,
     required this.medicationCount,
     required this.adherence,
+    required this.daysSinceLastDose,
     this.lastActivity,
   });
 }
@@ -99,7 +101,7 @@ class _DoctorPatientsTabState extends State<DoctorPatientsTab> {
     final q = _searchQuery;
     var list = _patients.where((p) {
       if (q.isNotEmpty && !p.name.toLowerCase().contains(q)) return false;
-      if (_filter == 'atRisk' && p.adherence >= 0.7) return false;
+      if (_filter == 'atRisk' && !((p.adherence <= 0.7 && p.daysSinceLastDose >= 3) || p.adherence <= 0.5)) return false;
       if (_filter == 'adherent' && p.adherence < 0.7) return false;
       return true;
     }).toList();
@@ -139,6 +141,30 @@ class _DoctorPatientsTabState extends State<DoctorPatientsTab> {
   Future<double> _adherenceFor(String uid) =>
       ReportService().getAdherenceLast7Days(uid);
 
+  Future<int> _daysSinceLastDoseFor(String uid) async {
+    final db = FirebaseFirestore.instance;
+    final today = DateTime.now();
+    for (int i = 0; i <= 30; i++) {
+      final date = today.subtract(Duration(days: i));
+      final y = date.year.toString().padLeft(4, '0');
+      final m = date.month.toString().padLeft(2, '0');
+      final d = date.day.toString().padLeft(2, '0');
+      final dayDoc = await db
+          .collection('users')
+          .doc(uid)
+          .collection('daily_intake')
+          .doc('$y-$m-$d')
+          .get();
+      if (dayDoc.exists) {
+        final data = dayDoc.data() ?? {};
+        for (final v in data.values) {
+          if (v is Map && (v['status'] as String?) == 'taken') return i;
+        }
+      }
+    }
+    return 999;
+  }
+
   Future<int> _medicationCountFor(String uid) async {
     final snap = await FirebaseFirestore.instance
         .collection('users')
@@ -173,13 +199,14 @@ class _DoctorPatientsTabState extends State<DoctorPatientsTab> {
         final lastActivity = ts is Timestamp ? ts.toDate() : null;
         final medCount = await _medicationCountFor(doc.id);
         final adherence = await _adherenceFor(doc.id);
-        // Fire-and-forget: generate alert if adherence is low
+        final days = await _daysSinceLastDoseFor(doc.id);
         AlertService.analyzeAndAlert(targetUid: doc.id);
         patients.add(_PatientInfo(
           uid: doc.id,
           name: name,
           medicationCount: medCount,
           adherence: adherence,
+          daysSinceLastDose: days,
           lastActivity: lastActivity,
         ));
       }
@@ -225,7 +252,7 @@ class _DoctorPatientsTabState extends State<DoctorPatientsTab> {
           setState(() => _patients.insert(
               idx.clamp(0, _patients.length), patient));
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to delete "${patient.name}": $e')),
+            SnackBar(content: Text('Failed to delete ${patient.name}: $e')),
           );
         }
       }
@@ -289,11 +316,6 @@ class _DoctorPatientsTabState extends State<DoctorPatientsTab> {
     );
     if (deleted == true) _loadPatients();
   }
-
-  void _onAddPatient() =>
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Add Patient — coming soon')),
-      );
 
   List<Widget> _buildListItems(List<_PatientInfo> items) {
     final s = S.of(context);
@@ -362,7 +384,7 @@ class _DoctorPatientsTabState extends State<DoctorPatientsTab> {
                 padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: isDark ? const Color(0xFF1E1E2E) : Colors.white,
+                    color: isDark ? const Color(0xFF1E2028) : Colors.white,
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
@@ -428,7 +450,7 @@ class _DoctorPatientsTabState extends State<DoctorPatientsTab> {
                       offset: const Offset(0, 36),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14)),
-                      color: isDark ? const Color(0xFF1E1E2E) : null,
+                      color: isDark ? const Color(0xFF1E2028) : null,
                       itemBuilder: (_) => [
                         PopupMenuItem(
                             value: 'name',
@@ -451,12 +473,12 @@ class _DoctorPatientsTabState extends State<DoctorPatientsTab> {
                             horizontal: 12, vertical: 7),
                         decoration: BoxDecoration(
                           color: isDark
-                              ? const Color(0xFF1E1E2E)
+                              ? const Color(0xFF1E2028)
                               : Colors.white,
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
                               color: isDark
-                                  ? const Color(0xFF3A3A5C)
+                                  ? const Color(0xFF2A2D3A)
                                   : const Color(0xFFE2E8F0)),
                         ),
                         child: Row(
@@ -498,18 +520,6 @@ class _DoctorPatientsTabState extends State<DoctorPatientsTab> {
           ),
         ),
 
-        // FAB
-        Positioned(
-          right: 16,
-          bottom: 16,
-          child: FloatingActionButton(
-            heroTag: 'patients_fab',
-            shape: const CircleBorder(),
-            onPressed: _onAddPatient,
-            backgroundColor: const Color(0xFF1E3A8A),
-            child: const Icon(Icons.person_add_outlined, color: Colors.white),
-          ),
-        ),
       ],
     );
   }
@@ -559,7 +569,7 @@ class _DoctorPatientsTabState extends State<DoctorPatientsTab> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1E3A8A).withValues(alpha: 0.10),
+                  color: isDark ? Colors.white : const Color(0xFF1E3A8A).withValues(alpha: 0.10),
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Text(
@@ -592,18 +602,6 @@ class _DoctorPatientsTabState extends State<DoctorPatientsTab> {
                       fontWeight: FontWeight.w500,
                     ),
                     textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 18),
-                  OutlinedButton.icon(
-                    onPressed: _onAddPatient,
-                    icon: const Icon(Icons.person_add_outlined, size: 16),
-                    label: Text(s.addNewPatient),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFF1E3A8A),
-                      side: const BorderSide(color: Color(0xFF1E3A8A)),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12)),
-                    ),
                   ),
                 ],
               ),
@@ -655,13 +653,13 @@ class _ChipFilter extends StatelessWidget {
         decoration: BoxDecoration(
           color: active
               ? color
-              : (isDark ? const Color(0xFF1E1E2E) : Colors.white),
+              : (isDark ? const Color(0xFF1E2028) : Colors.white),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
               color: active
                   ? color
                   : (isDark
-                      ? const Color(0xFF3A3A5C)
+                      ? const Color(0xFF2A2D3A)
                       : const Color(0xFFE2E8F0))),
           boxShadow: active
               ? [
@@ -768,7 +766,7 @@ class _PatientCardState extends State<_PatientCard> {
         child: Container(
           padding: const EdgeInsets.fromLTRB(16, 14, 4, 14),
           decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF1E1E2E) : Colors.white,
+            color: isDark ? const Color(0xFF1E2028) : Colors.white,
             borderRadius: BorderRadius.circular(18),
             boxShadow: [
               BoxShadow(
@@ -896,7 +894,7 @@ class _PatientCardState extends State<_PatientCard> {
                         value: p.adherence,
                         minHeight: 7,
                         backgroundColor: isDark
-                            ? const Color(0xFF3A3A5C)
+                            ? const Color(0xFF2A2D3A)
                             : const Color(0xFFE2E8F0),
                         valueColor: AlwaysStoppedAnimation<Color>(_barColor),
                       ),
@@ -914,7 +912,7 @@ class _PatientCardState extends State<_PatientCard> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16)),
                 elevation: 4,
-                color: isDark ? const Color(0xFF1E1E2E) : null,
+                color: isDark ? const Color(0xFF1E2028) : null,
                 icon: Icon(Icons.more_vert,
                     color: isDark ? Colors.white38 : const Color(0xFF94A3B8),
                     size: 20),
@@ -1015,8 +1013,8 @@ class _SkeletonCardState extends State<_SkeletonCard>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardBg = isDark ? const Color(0xFF1E1E2E) : Colors.white;
-    final skelBg = isDark ? const Color(0xFF2A2A4A) : const Color(0xFFE2E8F0);
+    final cardBg = isDark ? const Color(0xFF1E2028) : Colors.white;
+    final skelBg = isDark ? const Color(0xFF252830) : const Color(0xFFE2E8F0);
 
     return AnimatedBuilder(
       animation: _opacity,
@@ -1073,7 +1071,7 @@ class _SkeletonCardState extends State<_SkeletonCard>
   }
 }
 
-// ── Medications bottom sheet ──────────────────────────────────────────────────
+// Medications bottom sheet
 
 class _MedsSheet extends StatefulWidget {
   final String patientUid;
@@ -1181,11 +1179,11 @@ class _MedsSheetState extends State<_MedsSheet> {
   Widget build(BuildContext context) {
     final s = S.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bg = isDark ? const Color(0xFF1E1E2E) : Colors.white;
+    final bg = isDark ? const Color(0xFF1E2028) : Colors.white;
     final onBg = isDark ? Colors.white : const Color(0xFF0F172A);
     final subColor = isDark ? Colors.white54 : const Color(0xFF64748B);
-    final tileBg = isDark ? const Color(0xFF2A2A4A) : const Color(0xFFF8FAFC);
-    final borderColor = isDark ? const Color(0xFF3A3A5C) : const Color(0xFFE2E8F0);
+    final tileBg = isDark ? const Color(0xFF252830) : const Color(0xFFF8FAFC);
+    final borderColor = isDark ? const Color(0xFF2A2D3A) : const Color(0xFFE2E8F0);
 
     return Container(
       decoration: BoxDecoration(
@@ -1334,3 +1332,4 @@ class _MedsSheetState extends State<_MedsSheet> {
     );
   }
 }
+

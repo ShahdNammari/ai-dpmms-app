@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -680,7 +680,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     filled: true,
                     fillColor: isDark
-                        ? const Color(0xFF1E1E2E)
+                        ? const Color(0xFF1E2028)
                         : const Color(0xFFF8FAFC),
                     contentPadding: const EdgeInsets.symmetric(
                         horizontal: 14, vertical: 12),

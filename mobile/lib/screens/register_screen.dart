@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart' hide TextDirection;
@@ -381,8 +381,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Widget _buildStep2(S s, bool isDark, Color primaryText, Color secondaryText) {
     final borderColor =
-        isDark ? const Color(0xFF3A3A5C) : const Color(0xFFE2E8F0);
-    final fieldFill = isDark ? const Color(0xFF1E1E2E) : Colors.white;
+        isDark ? const Color(0xFF2A2D3A) : const Color(0xFFE2E8F0);
+    final fieldFill = isDark ? const Color(0xFF1E2028) : Colors.white;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -523,7 +523,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   }
                 }),
                 backgroundColor:
-                    isDark ? const Color(0xFF2A2A4A) : Colors.white,
+                    isDark ? const Color(0xFF252830) : Colors.white,
                 selectedColor: isDark
                     ? const Color(0xFF1E3A8A).withValues(alpha: 0.5)
                     : const Color(0xFFDBEAFE),
@@ -532,7 +532,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   color: selected
                       ? _blue
                       : (isDark
-                          ? const Color(0xFF3A3A5C)
+                          ? const Color(0xFF2A2D3A)
                           : const Color(0xFFCBD5E1)),
                 ),
                 labelStyle: TextStyle(
@@ -626,7 +626,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 }
 
-// ── Step indicator ────────────────────────────────────────────────────────────
+// ”” Step indicator ””””””””””””””””””””””””””””””””””””””””””””””””””””””””””””
 
 class _StepIndicator extends StatelessWidget {
   final int current;
@@ -645,7 +645,7 @@ class _StepIndicator extends StatelessWidget {
             color: current >= 2
                 ? const Color(0xFF1E3A8A)
                 : (isDark
-                    ? const Color(0xFF3A3A5C)
+                    ? const Color(0xFF2A2D3A)
                     : const Color(0xFFE2E8F0)),
           ),
         ),
@@ -666,7 +666,7 @@ class _StepDot extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final inactiveCircle =
-        isDark ? const Color(0xFF2A2A4A) : const Color(0xFFE2E8F0);
+        isDark ? const Color(0xFF252830) : const Color(0xFFE2E8F0);
     final inactiveText =
         isDark ? Colors.white38 : const Color(0xFF94A3B8);
 
@@ -705,7 +705,7 @@ class _StepDot extends StatelessWidget {
   }
 }
 
-// ── Shared widgets ────────────────────────────────────────────────────────────
+// ”” Shared widgets ””””””””””””””””””””””””””””””””””””””””””””””””””””””””””””
 
 class _FieldLabel extends StatelessWidget {
   final String text;
@@ -743,7 +743,7 @@ class _NiceField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final fillColor = isDark ? const Color(0xFF1E1E2E) : Colors.white;
+    final fillColor = isDark ? const Color(0xFF1E2028) : Colors.white;
     final hintColor = isDark ? Colors.white38 : const Color(0xFF94A3B8);
     final textColor = isDark ? Colors.white : const Color(0xFF0F172A);
 

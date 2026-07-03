@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
@@ -183,7 +183,7 @@ class _DoctorReportsTabState extends State<DoctorReportsTab> {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: isDark ? const Color(0xFF1E1E2E) : Colors.white,
+      backgroundColor: isDark ? const Color(0xFF1E2028) : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -270,7 +270,7 @@ class _DoctorReportsTabState extends State<DoctorReportsTab> {
       leading: const Icon(Icons.circle, color: Color(0xFF1E3A8A), size: 0),
       title: Row(
         children: [
-          Icon(icon, color: const Color(0xFF1E3A8A)),
+          Icon(icon, color: isDark ? Colors.white : const Color(0xFF1E3A8A)),
           const SizedBox(width: 12),
           Text(
             title,
@@ -289,7 +289,7 @@ class _DoctorReportsTabState extends State<DoctorReportsTab> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     showModalBottomSheet(
       context: context,
-      backgroundColor: isDark ? const Color(0xFF1E1E2E) : Colors.white,
+      backgroundColor: isDark ? const Color(0xFF1E2028) : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -387,12 +387,12 @@ class _DoctorReportsTabState extends State<DoctorReportsTab> {
                             horizontal: 14, vertical: 10),
                         decoration: BoxDecoration(
                           color: isDark
-                              ? const Color(0xFF1E1E2E)
+                              ? const Color(0xFF1E2028)
                               : Colors.white,
                           borderRadius: BorderRadius.circular(30),
                           border: Border.all(
                               color: isDark
-                                  ? const Color(0xFF3A3A5C)
+                                  ? const Color(0xFF2A2D3A)
                                   : const Color(0xFFE2E8F0)),
                           boxShadow: [
                             BoxShadow(
@@ -408,7 +408,7 @@ class _DoctorReportsTabState extends State<DoctorReportsTab> {
                             Container(
                               width: 26, height: 26,
                               decoration: BoxDecoration(
-                                color: const Color(0xFF1E3A8A)
+                                color: isDark ? Colors.white : const Color(0xFF1E3A8A)
                                     .withValues(alpha: 0.10),
                                 shape: BoxShape.circle,
                               ),
@@ -454,7 +454,7 @@ class _DoctorReportsTabState extends State<DoctorReportsTab> {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16)),
                     elevation: 4,
-                    color: isDark ? const Color(0xFF1E1E2E) : null,
+                    color: isDark ? const Color(0xFF1E2028) : null,
                     icon: Icon(Icons.more_vert,
                         color: isDark
                             ? Colors.white54
@@ -776,7 +776,7 @@ class _PeriodChip extends StatelessWidget {
     return Material(
       color: selected
           ? const Color(0xFF2563EB)
-          : (isDark ? const Color(0xFF1E1E2E) : Colors.white),
+          : (isDark ? const Color(0xFF1E2028) : Colors.white),
       borderRadius: BorderRadius.circular(999),
       child: InkWell(
         borderRadius: BorderRadius.circular(999),
@@ -789,7 +789,7 @@ class _PeriodChip extends StatelessWidget {
               color: selected
                   ? const Color(0xFF2563EB)
                   : (isDark
-                      ? const Color(0xFF3A3A5C)
+                      ? const Color(0xFF2A2D3A)
                       : const Color(0xFFD1D5DB)),
             ),
           ),
@@ -828,7 +828,7 @@ class _DateNavigator extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E1E2E) : Colors.white,
+        color: isDark ? const Color(0xFF1E2028) : Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -886,7 +886,7 @@ class _SummaryCards extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E1E2E) : Colors.white,
+        color: isDark ? const Color(0xFF1E2028) : Colors.white,
         borderRadius: BorderRadius.circular(22),
         boxShadow: [
           BoxShadow(
@@ -1004,7 +1004,7 @@ class _VerticalDivider extends StatelessWidget {
     return Container(
       width: 1,
       margin: const EdgeInsets.symmetric(vertical: 14),
-      color: isDark ? const Color(0xFF3A3A5C) : const Color(0xFFE2E8F0),
+      color: isDark ? const Color(0xFF2A2D3A) : const Color(0xFFE2E8F0),
     );
   }
 }
@@ -1030,7 +1030,7 @@ class _ChartSection extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(14, 16, 14, 16),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E1E2E) : Colors.white,
+        color: isDark ? const Color(0xFF1E2028) : Colors.white,
         borderRadius: BorderRadius.circular(22),
         boxShadow: [
           BoxShadow(
@@ -1210,7 +1210,7 @@ class _InsightCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E1E2E) : Colors.white,
+        color: isDark ? const Color(0xFF1E2028) : Colors.white,
         borderRadius: BorderRadius.circular(999),
         boxShadow: [
           BoxShadow(
@@ -1253,7 +1253,7 @@ class _InsightCard extends StatelessWidget {
   }
 }
 
-// Skeleton — data sections only (summary cards, chart, insights)
+// Skeleton ” data sections only (summary cards, chart, insights)
 
 class _SkeletonReportData extends StatefulWidget {
   const _SkeletonReportData();
@@ -1290,7 +1290,7 @@ class _SkeletonReportDataState extends State<_SkeletonReportData>
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF2A2A4A) : const Color(0xFFE2E8F0),
+        color: isDark ? const Color(0xFF252830) : const Color(0xFFE2E8F0),
         borderRadius: BorderRadius.circular(radius),
       ),
     );
@@ -1299,7 +1299,7 @@ class _SkeletonReportDataState extends State<_SkeletonReportData>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardBg = isDark ? const Color(0xFF1E1E2E) : Colors.white;
+    final cardBg = isDark ? const Color(0xFF1E2028) : Colors.white;
 
     return AnimatedBuilder(
       animation: _opacity,
@@ -1308,7 +1308,7 @@ class _SkeletonReportDataState extends State<_SkeletonReportData>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Summary cards — mirrors _SummaryCards
+            // Summary cards ” mirrors _SummaryCards
             Container(
               decoration: BoxDecoration(
                 color: cardBg,
@@ -1329,7 +1329,7 @@ class _SkeletonReportDataState extends State<_SkeletonReportData>
                               height: 54,
                               decoration: BoxDecoration(
                                 color: isDark
-                                    ? const Color(0xFF2A2A4A)
+                                    ? const Color(0xFF252830)
                                     : const Color(0xFFE2E8F0),
                                 shape: BoxShape.circle,
                               ),
@@ -1375,7 +1375,7 @@ class _SkeletonReportDataState extends State<_SkeletonReportData>
               ),
             ),
             const SizedBox(height: 18),
-            // Chart section — mirrors _ChartSection
+            // Chart section ” mirrors _ChartSection
             Container(
               width: double.infinity,
               padding: const EdgeInsets.fromLTRB(14, 16, 14, 16),
@@ -1430,7 +1430,7 @@ class _SkeletonReportDataState extends State<_SkeletonReportData>
               ),
             ),
             const SizedBox(height: 18),
-            // Best day insight — mirrors _InsightCard pill shape
+            // Best day insight ” mirrors _InsightCard pill shape
             Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -1470,7 +1470,7 @@ class _SkeletonReportDataState extends State<_SkeletonReportData>
   }
 }
 
-// Skeleton loading — full page (used while patient list is fetching)
+// Skeleton loading ” full page (used while patient list is fetching)
 
 class _SkeletonReportContent extends StatefulWidget {
   final bool showSelectorRow;
@@ -1510,7 +1510,7 @@ class _SkeletonReportContentState extends State<_SkeletonReportContent>
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF2A2A4A) : const Color(0xFFE2E8F0),
+        color: isDark ? const Color(0xFF252830) : const Color(0xFFE2E8F0),
         borderRadius: BorderRadius.circular(radius),
       ),
     );
@@ -1519,9 +1519,9 @@ class _SkeletonReportContentState extends State<_SkeletonReportContent>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardBg = isDark ? const Color(0xFF1E1E2E) : Colors.white;
+    final cardBg = isDark ? const Color(0xFF1E2028) : Colors.white;
     final divBg =
-        isDark ? const Color(0xFF3A3A5C) : const Color(0xFFE2E8F0);
+        isDark ? const Color(0xFF2A2D3A) : const Color(0xFFE2E8F0);
 
     return AnimatedBuilder(
       animation: _opacity,
@@ -1649,7 +1649,7 @@ class _SkeletonReportContentState extends State<_SkeletonReportContent>
                                   width: 20, height: h,
                                   decoration: BoxDecoration(
                                     color: isDark
-                                        ? const Color(0xFF2A2A4A)
+                                        ? const Color(0xFF252830)
                                         : const Color(0xFFE2E8F0),
                                     borderRadius: BorderRadius.circular(4),
                                   ),

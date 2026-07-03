@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Medication {
   final String id;
@@ -68,7 +68,7 @@ class Medication {
       endDate = endTs.toDate();
     }
 
-    // ── repeatDays ──────────────────────────────────────────────
+    //  repeatDays 
     // الأدوية القديمة بـ Firestore ما عندها repeatDays
     // الديفولت = كل الأيام عشان ما نكسر السلوك القديم
     final rawDays = data['repeatDays'];
@@ -76,7 +76,7 @@ class Medication {
         ? rawDays.map((e) => e.toString()).toList()
         : List<String>.from(allDays);
 
-    // ── reminderEnabled ──────────────────────────────────────────
+    //  reminderEnabled 
     // الأدوية القديمة ما عندها reminderEnabled → ديفولت true
     final reminderEnabled = (data['reminderEnabled'] as bool?) ?? true;
 

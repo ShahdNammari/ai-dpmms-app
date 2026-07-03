@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
 import '../models/medication.dart';
@@ -84,7 +84,7 @@ class ReportService {
     return result;
   }
 
-  // A dose is "due" if it's today or any past day — future days are excluded.
+  // A dose is due if it's today or any past day — future days are excluded.
   // Today's doses all count regardless of what time they're scheduled at,
   // so the report shows the complete picture (all 5 meds, not just the 2
   // whose times have already passed).
@@ -99,8 +99,8 @@ class ReportService {
   }
 
   // Whether a specific dose's scheduled time has actually passed.
-  // Used only for "most missed medication" insights — we don't want to flag
-  // a dose as "truly missed" just because it's on today's schedule but hours away.
+  // Used only for most missed medication insights — we don't want to flag
+  // a dose as truly missed just because it's on today's schedule but hours away.
   bool _isDoseTimeReached({
     required DateTime day,
     required String time,
@@ -203,7 +203,7 @@ class ReportService {
             skipped++;
           } else {
             missed++;
-            // Only count toward "most missed" insight if the time actually passed —
+            // Only count toward most missed insight if the time actually passed —
             // today's future-scheduled doses shouldn't skew the insight.
             if (_isDoseTimeReached(day: day, time: time, now: now)) {
               missedByMedicationGroup[med.groupId] =

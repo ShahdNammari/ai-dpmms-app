@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'login_screen.dart';
 import 'register_screen.dart';
@@ -316,7 +316,7 @@ class _RoleSelectScreenState extends State<RoleSelectScreen>
                 SafeArea(
                   child: Column(
                     children: [
-                      // Language picker — top right
+                      // Language picker ” top right
                       AnimatedBuilder(
                         animation: _hintFade,
                         builder: (_, child) =>
@@ -507,7 +507,7 @@ class _RoleSelectScreenState extends State<RoleSelectScreen>
   }
 }
 
-// ── Language picker ───────────────────────────────────────────────────────────
+// Language picker 
 
 class _LangPicker extends StatelessWidget {
   const _LangPicker();
@@ -569,7 +569,7 @@ class _LangBtn extends StatelessWidget {
   }
 }
 
-// ── Swipe hint ────────────────────────────────────────────────────────────────
+// Swipe hint
 
 class _SwipeHint extends StatelessWidget {
   final String label;
@@ -621,8 +621,7 @@ class _SwipeHint extends StatelessWidget {
   }
 }
 
-// ── Bottom sheet ──────────────────────────────────────────────────────────────
-
+// Bottom sheet
 class _GetStartedSheet extends StatelessWidget {
   final VoidCallback onLogin;
   final VoidCallback onRegister;
@@ -747,8 +746,7 @@ class _GetStartedSheet extends StatelessWidget {
   }
 }
 
-// ── Role tile ─────────────────────────────────────────────────────────────────
-
+// Role tile
 class _RoleTile extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -764,6 +762,7 @@ class _RoleTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return InkWell(
       borderRadius: BorderRadius.circular(14),
       onTap: onTap,
@@ -782,7 +781,7 @@ class _RoleTile extends StatelessWidget {
                 color: const Color(0xFFEFF6FF),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(icon, color: const Color(0xFF1E3A8A), size: 22),
+              child: Icon(icon, color: isDark ? Colors.white : const Color(0xFF1E3A8A), size: 22),
             ),
             const SizedBox(width: 14),
             Expanded(

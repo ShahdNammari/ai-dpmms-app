@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:ui';
 import 'package:ai_dpmms_mobile/services/app_refresh.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -209,7 +209,7 @@ class NotificationsScreenState extends State<NotificationsScreen> {
                             backgroundColor:
                                 const Color(0xFF1E3A8A).withValues(alpha: 0.12),
                             child: Icon(_iconForType(type),
-                                color: const Color(0xFF1E3A8A), size: 20),
+                                color: isDark ? Colors.white : const Color(0xFF1E3A8A), size: 20),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
@@ -298,7 +298,7 @@ class NotificationsScreenState extends State<NotificationsScreen> {
   }) async {
     final s     = S.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final sheetBg = isDark ? const Color(0xFF1E1E2E) : Colors.white;
+    final sheetBg = isDark ? const Color(0xFF1E2028) : Colors.white;
     final onSheet = isDark ? Colors.white : const Color(0xFF0F172A);
 
     final type  = (data['type'] ?? 'med') as String;
@@ -422,7 +422,7 @@ class NotificationsScreenState extends State<NotificationsScreen> {
                     )
                   else
                     Builder(builder: (_) {
-                      // medication_added / medication_updated — keep existing look
+                      // medication_added / medication_updated ” keep existing look
                       if (type == 'medication_added' || type == 'medication_updated') {
                         final medNameForSheet = (data['medication_name'] as String?) ?? body;
                         final sheetTitle = type == 'medication_added'
@@ -443,7 +443,7 @@ class NotificationsScreenState extends State<NotificationsScreen> {
                         );
                       }
 
-                      // doctor message — title + description + optional View Medication
+                      // doctor message ” title + description + optional View Medication
                       final sheetTitle = title.isEmpty ? s.doctorMessage : title;
                       final medName = data['medication'] as String?;
                       final hasMed = medName != null && medName.isNotEmpty;
@@ -641,7 +641,7 @@ class _SkeletonNotificationsState extends State<_SkeletonNotifications>
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF2A2A4A) : const Color(0xFFE2E8F0),
+        color: isDark ? const Color(0xFF252830) : const Color(0xFFE2E8F0),
         borderRadius: BorderRadius.circular(radius),
       ),
     );
@@ -650,7 +650,7 @@ class _SkeletonNotificationsState extends State<_SkeletonNotifications>
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardBg = isDark ? const Color(0xFF1E1E2E) : Colors.white;
+    final cardBg = isDark ? const Color(0xFF1E2028) : Colors.white;
 
     return AnimatedBuilder(
       animation: _opacity,
@@ -674,7 +674,7 @@ class _SkeletonNotificationsState extends State<_SkeletonNotifications>
                   height: 36,
                   decoration: BoxDecoration(
                     color: isDark
-                        ? const Color(0xFF2A2A4A)
+                        ? const Color(0xFF252830)
                         : const Color(0xFFE2E8F0),
                     shape: BoxShape.circle,
                   ),
@@ -742,7 +742,7 @@ class _SkeletonMedDetailState extends State<_SkeletonMedDetail>
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF2A2A4A) : const Color(0xFFE2E8F0),
+        color: isDark ? const Color(0xFF252830) : const Color(0xFFE2E8F0),
         borderRadius: BorderRadius.circular(radius),
       ),
     );
@@ -769,7 +769,7 @@ class _SkeletonMedDetailState extends State<_SkeletonMedDetail>
                     height: 32,
                     decoration: BoxDecoration(
                       color: isDark
-                          ? const Color(0xFF2A2A4A)
+                          ? const Color(0xFF252830)
                           : const Color(0xFFE2E8F0),
                       shape: BoxShape.circle,
                     ),

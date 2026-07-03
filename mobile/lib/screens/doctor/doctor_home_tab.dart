@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
@@ -41,7 +41,8 @@ class _PatientStat {
   final String uid;
   final String name;
   final double adherence;
-  const _PatientStat({required this.uid, required this.name, required this.adherence});
+  final int daysSinceLastDose;
+  const _PatientStat({required this.uid, required this.name, required this.adherence, required this.daysSinceLastDose});
 }
 
 class _Alert {
@@ -120,7 +121,7 @@ class _DoctorHomeTabState extends State<DoctorHomeTab> {
           ? const RelativeRect.fromLTRB(16, 145, 1000, 0)
           : const RelativeRect.fromLTRB(1000, 145, 16, 0),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-      color: isDark ? const Color(0xFF1E1E2E) : Colors.white,
+      color: isDark ? const Color(0xFF1E2028) : Colors.white,
       items: [
         PopupMenuItem(
           value: 'settings',
@@ -208,7 +209,7 @@ class _DoctorHomeTabState extends State<DoctorHomeTab> {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: isDark ? const Color(0xFF1E1E2E) : Colors.white,
+      backgroundColor: isDark ? const Color(0xFF1E2028) : Colors.white,
       shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(26))),
       builder: (_) => Padding(
@@ -239,14 +240,14 @@ class _DoctorHomeTabState extends State<DoctorHomeTab> {
             ListTile(
               leading: Icon(Icons.email_outlined,
                   color: isDark ? Colors.white70 : null),
-              title: Text('support@ai-dpmms.com',
+              title: Text('sh.m.nammari02@gmail.com',
                   style: TextStyle(
                       color: isDark ? Colors.white : null)),
             ),
             ListTile(
               leading: Icon(Icons.phone_outlined,
                   color: isDark ? Colors.white70 : null),
-              title: Text('+970 000 000 000',
+              title: Text('+970 50 683 1577',
                   style: TextStyle(
                       color: isDark ? Colors.white : null)),
             ),
@@ -255,9 +256,6 @@ class _DoctorHomeTabState extends State<DoctorHomeTab> {
       ),
     );
   }
-
-  void _onAddPatient() => ScaffoldMessenger.of(context)
-      .showSnackBar(const SnackBar(content: Text('Add Patient — coming soon')));
 
   Future<void> _sendReminderFor(_Alert alert) async {
     await Navigator.push(
@@ -292,6 +290,28 @@ class _DoctorHomeTabState extends State<DoctorHomeTab> {
   Future<double> _adherenceFor(String uid) =>
       ReportService().getAdherenceLast7Days(uid);
 
+  Future<int> _daysSinceLastDoseFor(String uid) async {
+    final db = FirebaseFirestore.instance;
+    final today = DateTime.now();
+    for (int i = 0; i <= 30; i++) {
+      final date = today.subtract(Duration(days: i));
+      final dateStr = DateFormat('yyyy-MM-dd').format(date);
+      final dayDoc = await db
+          .collection('users')
+          .doc(uid)
+          .collection('daily_intake')
+          .doc(dateStr)
+          .get();
+      if (dayDoc.exists) {
+        final data = dayDoc.data() ?? {};
+        for (final v in data.values) {
+          if (v is Map && (v['status'] as String?) == 'taken') return i;
+        }
+      }
+    }
+    return 999;
+  }
+
   Future<List<_PatientStat>> _loadPatientStats() async {
     final db = FirebaseFirestore.instance;
     final results = await Future.wait([
@@ -311,7 +331,8 @@ class _DoctorHomeTabState extends State<DoctorHomeTab> {
           ? data['name'] as String
           : (data['username'] as String?) ?? 'Unknown';
       final adherence = await _adherenceFor(doc.id);
-      stats.add(_PatientStat(uid: doc.id, name: name, adherence: adherence));
+      final days = await _daysSinceLastDoseFor(doc.id);
+      stats.add(_PatientStat(uid: doc.id, name: name, adherence: adherence, daysSinceLastDose: days));
       AlertService.analyzeAndAlert(targetUid: doc.id);
     }
     return stats;
@@ -344,7 +365,7 @@ class _DoctorHomeTabState extends State<DoctorHomeTab> {
 
           final stats = snap.data;
           final loading = snap.connectionState != ConnectionState.done;
-          final atRisk = stats?.where((s) => s.adherence < 0.7).toList() ?? [];
+          final atRisk = stats?.where((s) => (s.adherence <= 0.7 && s.daysSinceLastDose >= 3) || s.adherence <= 0.5).toList() ?? [];
           final adherent = stats?.where((s) => s.adherence >= 0.7).toList() ?? [];
 
           return SingleChildScrollView(
@@ -365,19 +386,6 @@ class _DoctorHomeTabState extends State<DoctorHomeTab> {
                         ),
                       ),
                     ),
-                    InkWell(
-                      borderRadius: BorderRadius.circular(12),
-                      onTap: _onAddPatient,
-                      child: Padding(
-                        padding: const EdgeInsets.all(6),
-                        child: Icon(Icons.person_add_outlined,
-                            color: isDark
-                                ? Colors.white70
-                                : const Color(0xFF1E3A8A),
-                            size: 22),
-                      ),
-                    ),
-                    const SizedBox(width: 2),
                     InkWell(
                       borderRadius: BorderRadius.circular(12),
                       onTap: () => Navigator.push(context,
@@ -541,7 +549,7 @@ class _SkeletonHomeContentState extends State<_SkeletonHomeContent>
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF2A2A4A) : const Color(0xFFE2E8F0),
+        color: isDark ? const Color(0xFF252830) : const Color(0xFFE2E8F0),
         borderRadius: BorderRadius.circular(radius),
       ),
     );
@@ -566,7 +574,7 @@ class _SkeletonHomeContentState extends State<_SkeletonHomeContent>
                             height: 118,
                             decoration: BoxDecoration(
                               color: isDark
-                                  ? const Color(0xFF2A2A4A)
+                                  ? const Color(0xFF252830)
                                   : const Color(0xFFE2E8F0),
                               borderRadius: BorderRadius.circular(20),
                             ),
@@ -608,8 +616,8 @@ class _SkeletonAlertCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final cardBg = isDark ? const Color(0xFF1E1E2E) : Colors.white;
-    final skelBg = isDark ? const Color(0xFF2A2A4A) : const Color(0xFFE2E8F0);
+    final cardBg = isDark ? const Color(0xFF1E2028) : Colors.white;
+    final skelBg = isDark ? const Color(0xFF252830) : const Color(0xFFE2E8F0);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
@@ -842,7 +850,7 @@ class _AlertsSection extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF1E1E2E) : Colors.white,
+                  color: isDark ? const Color(0xFF1E2028) : Colors.white,
                   borderRadius: BorderRadius.circular(18),
                 ),
                 child: Text(
@@ -890,7 +898,7 @@ class _SmartAlertCard extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 10),
       child: Container(
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1E1E2E) : Colors.white,
+          color: isDark ? const Color(0xFF1E2028) : Colors.white,
           borderRadius: BorderRadius.circular(18),
           boxShadow: [
             BoxShadow(
@@ -961,7 +969,7 @@ class _SmartAlertCard extends StatelessWidget {
                             _AlertActionBtn(
                               label: s.sendReminder,
                               icon: Icons.notifications_active_outlined,
-                              color: const Color(0xFF1E3A8A),
+                              color: isDark ? Colors.white : const Color(0xFF1E3A8A),
                               onTap: () => onSendReminder(alert),
                             ),
                             const SizedBox(width: 8),
@@ -1105,7 +1113,7 @@ class _FilteredPatientList extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF1E1E2E) : Colors.white,
+              color: isDark ? const Color(0xFF1E2028) : Colors.white,
               borderRadius: BorderRadius.circular(18),
             ),
             child: Text(
@@ -1163,7 +1171,7 @@ class _PatientFilterCard extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
           decoration: BoxDecoration(
-            color: isDark ? const Color(0xFF1E1E2E) : Colors.white,
+            color: isDark ? const Color(0xFF1E2028) : Colors.white,
             borderRadius: BorderRadius.circular(18),
             boxShadow: [
               BoxShadow(
@@ -1215,3 +1223,4 @@ class _PatientFilterCard extends StatelessWidget {
     );
   }
 }
+

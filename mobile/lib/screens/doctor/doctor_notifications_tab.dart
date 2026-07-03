@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -285,13 +285,13 @@ class _FilterChip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
           color: selected
-              ? (isDark ? const Color(0xFF2A2A4A) : const Color(0xFFE8EEF9))
-              : (isDark ? const Color(0xFF1E1E2E) : Colors.white),
+              ? (isDark ? const Color(0xFF252830) : const Color(0xFFE8EEF9))
+              : (isDark ? const Color(0xFF1E2028) : Colors.white),
           borderRadius: BorderRadius.circular(22),
           border: Border.all(
             color: selected
                 ? const Color(0xFF1E3A8A)
-                : (isDark ? const Color(0xFF3A3A5C) : const Color(0xFFE2E8F0)),
+                : (isDark ? const Color(0xFF2A2D3A) : const Color(0xFFE2E8F0)),
             width: selected ? 1.5 : 1,
           ),
         ),
@@ -354,7 +354,7 @@ class _NotifCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E1E2E) : Colors.white,
+        color: isDark ? const Color(0xFF1E2028) : Colors.white,
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(

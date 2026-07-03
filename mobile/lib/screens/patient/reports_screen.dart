@@ -1,4 +1,4 @@
-import 'package:ai_dpmms_mobile/services/app_refresh.dart';
+﻿import 'package:ai_dpmms_mobile/services/app_refresh.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -119,7 +119,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
     final s      = S.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final sheetBg =
-        isDark ? const Color(0xFF1E1E2E) : Colors.white;
+        isDark ? const Color(0xFF1E2028) : Colors.white;
 
     showModalBottomSheet(
       context: context,
@@ -325,7 +325,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
   }
 }
 
-// ── Export tile ────────────────────────────────────────────────────────────
+// Export tile
 
 class _ExportTile extends StatelessWidget {
   final IconData icon;
@@ -345,7 +345,7 @@ class _ExportTile extends StatelessWidget {
     final color = isDark ? Colors.white : const Color(0xFF0F172A);
     return ListTile(
       contentPadding: EdgeInsets.zero,
-      leading: Icon(icon, color: const Color(0xFF1E3A8A)),
+      leading: Icon(icon, color: isDark ? Colors.white : const Color(0xFF1E3A8A)),
       title: Text(title,
           style: TextStyle(fontWeight: FontWeight.w700, color: color)),
       onTap: onTap,
@@ -353,7 +353,7 @@ class _ExportTile extends StatelessWidget {
   }
 }
 
-// ── Period selector ────────────────────────────────────────────────────────
+// ”” Period selector ””””””””””””””””””””””””””””””””””””””””””””””””””””””””
 
 class _PeriodSelector extends StatelessWidget {
   final ReportPeriodType selectedType;
@@ -419,7 +419,7 @@ class _PeriodChip extends StatelessWidget {
               color: selected
                   ? const Color(0xFF2563EB)
                   : (isDark
-                      ? const Color(0xFF3A3A5C)
+                      ? const Color(0xFF2A2D3A)
                       : const Color(0xFFD1D5DB)),
             ),
           ),
@@ -439,7 +439,7 @@ class _PeriodChip extends StatelessWidget {
   }
 }
 
-// ── Date navigator ─────────────────────────────────────────────────────────
+// ”” Date navigator ”””””””””””””””””””””””””””””””””””””””””””””””””””””””””
 
 class _DateNavigator extends StatelessWidget {
   final String label;
@@ -498,7 +498,7 @@ class _DateNavigator extends StatelessWidget {
   }
 }
 
-// ── Summary cards ──────────────────────────────────────────────────────────
+// ”” Summary cards ””””””””””””””””””””””””””””””””””””””””””””””””””””””””””
 
 class _SummaryCards extends StatelessWidget {
   final ReportResult data;
@@ -643,7 +643,7 @@ class _VerticalDivider extends StatelessWidget {
   }
 }
 
-// ── Chart section ──────────────────────────────────────────────────────────
+// ”” Chart section ””””””””””””””””””””””””””””””””””””””””””””””””””””””””””
 
 class _ChartSection extends StatelessWidget {
   final ReportPeriodType type;
@@ -833,7 +833,7 @@ class _ChartBar extends StatelessWidget {
   }
 }
 
-// ── Insight card ───────────────────────────────────────────────────────────
+// ”” Insight card ”””””””””””””””””””””””””””””””””””””””””””””””””””””””””””
 
 class _InsightCard extends StatelessWidget {
   final IconData icon;
@@ -895,7 +895,7 @@ class _InsightCard extends StatelessWidget {
   }
 }
 
-// Skeleton loading — data sections only (summary cards, chart, insights)
+// Skeleton loading ” data sections only (summary cards, chart, insights)
 
 class _SkeletonReportData extends StatefulWidget {
   const _SkeletonReportData();
@@ -932,7 +932,7 @@ class _SkeletonReportDataState extends State<_SkeletonReportData>
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF2A2A4A) : const Color(0xFFE2E8F0),
+        color: isDark ? const Color(0xFF252830) : const Color(0xFFE2E8F0),
         borderRadius: BorderRadius.circular(radius),
       ),
     );
@@ -950,7 +950,7 @@ class _SkeletonReportDataState extends State<_SkeletonReportData>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Summary cards — mirrors _SummaryCards (container + 3 metric tiles)
+            // Summary cards ” mirrors _SummaryCards (container + 3 metric tiles)
             Container(
               decoration: BoxDecoration(
                 color: cardBg,
@@ -959,7 +959,7 @@ class _SkeletonReportDataState extends State<_SkeletonReportData>
               child: IntrinsicHeight(
                 child: Row(
                   children: [
-                    // Adherence — circle placeholder
+                    // Adherence ” circle placeholder
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
@@ -972,7 +972,7 @@ class _SkeletonReportDataState extends State<_SkeletonReportData>
                               height: 54,
                               decoration: BoxDecoration(
                                 color: isDark
-                                    ? const Color(0xFF2A2A4A)
+                                    ? const Color(0xFF252830)
                                     : const Color(0xFFE2E8F0),
                                 shape: BoxShape.circle,
                               ),
@@ -984,7 +984,7 @@ class _SkeletonReportDataState extends State<_SkeletonReportData>
                       ),
                     ),
                     const _VerticalDivider(),
-                    // Taken — large number placeholder
+                    // Taken ” large number placeholder
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
@@ -1000,7 +1000,7 @@ class _SkeletonReportDataState extends State<_SkeletonReportData>
                       ),
                     ),
                     const _VerticalDivider(),
-                    // Missed — large number placeholder
+                    // Missed ” large number placeholder
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
@@ -1020,7 +1020,7 @@ class _SkeletonReportDataState extends State<_SkeletonReportData>
               ),
             ),
             const SizedBox(height: 18),
-            // Chart section — mirrors _ChartSection container
+            // Chart section ” mirrors _ChartSection container
             Container(
               width: double.infinity,
               padding: const EdgeInsets.fromLTRB(14, 16, 14, 16),
@@ -1079,7 +1079,7 @@ class _SkeletonReportDataState extends State<_SkeletonReportData>
               ),
             ),
             const SizedBox(height: 18),
-            // Best day insight — mirrors _InsightCard pill shape
+            // Best day insight ” mirrors _InsightCard pill shape
             Container(
               width: double.infinity,
               padding:

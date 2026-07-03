@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -440,11 +440,11 @@ class _SendMessageScreenState extends State<SendMessageScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1E1E2E) : Colors.white,
+          color: isDark ? const Color(0xFF1E2028) : Colors.white,
           borderRadius: BorderRadius.circular(30),
           border: Border.all(
               color: isDark
-                  ? const Color(0xFF3A3A5C)
+                  ? const Color(0xFF2A2D3A)
                   : const Color(0xFFE2E8F0)),
           boxShadow: [
             BoxShadow(
@@ -491,7 +491,7 @@ class _SendMessageScreenState extends State<SendMessageScreen> {
   void _showPatientPicker(S s, bool isDark) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: isDark ? const Color(0xFF1E1E2E) : Colors.white,
+      backgroundColor: isDark ? const Color(0xFF1E2028) : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -543,7 +543,7 @@ class _SendMessageScreenState extends State<SendMessageScreen> {
         child: DropdownButton<String?>(
           value: _selectedMedication,
           isExpanded: true,
-          dropdownColor: isDark ? const Color(0xFF1E1E2E) : null,
+          dropdownColor: isDark ? const Color(0xFF1E2028) : null,
           hint: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text('None',
@@ -692,11 +692,11 @@ class _FieldBox extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E1E2E) : Colors.white,
+        color: isDark ? const Color(0xFF1E2028) : Colors.white,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
             color: isDark
-                ? const Color(0xFF3A3A5C)
+                ? const Color(0xFF2A2D3A)
                 : const Color(0xFFE2E8F0)),
         boxShadow: [
           BoxShadow(
