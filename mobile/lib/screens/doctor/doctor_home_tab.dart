@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
 import '../../l10n/app_strings.dart';
+import '../../services/alert_service.dart';
 import '../../services/report_service.dart';
 import '../../services/settings_service.dart';
 import '../role_select_screen.dart';
@@ -311,6 +312,7 @@ class _DoctorHomeTabState extends State<DoctorHomeTab> {
           : (data['username'] as String?) ?? 'Unknown';
       final adherence = await _adherenceFor(doc.id);
       stats.add(_PatientStat(uid: doc.id, name: name, adherence: adherence));
+      AlertService.analyzeAndAlert(targetUid: doc.id);
     }
     return stats;
   }

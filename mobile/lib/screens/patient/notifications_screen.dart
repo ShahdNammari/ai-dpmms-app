@@ -422,23 +422,84 @@ class NotificationsScreenState extends State<NotificationsScreen> {
                     )
                   else
                     Builder(builder: (_) {
-                      final medNameForSheet = (data['medication_name'] as String?) ?? body;
-                      final sheetTitle = type == 'medication_added'
-                          ? s.doctorAddedMedication(medNameForSheet)
-                          : type == 'medication_updated'
-                              ? s.doctorUpdatedMedication(medNameForSheet)
-                              : (title.isEmpty ? s.doctorMessage : title);
+                      // medication_added / medication_updated — keep existing look
+                      if (type == 'medication_added' || type == 'medication_updated') {
+                        final medNameForSheet = (data['medication_name'] as String?) ?? body;
+                        final sheetTitle = type == 'medication_added'
+                            ? s.doctorAddedMedication(medNameForSheet)
+                            : s.doctorUpdatedMedication(medNameForSheet);
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _detailRow(Icons.medical_information_outlined,
+                                sheetTitle, onSheet),
+                            const SizedBox(height: 32),
+                            SizedBox(
+                              width: double.infinity,
+                              child: _closeBtn(
+                                  s, onSheet, () => Navigator.pop(context)),
+                            ),
+                          ],
+                        );
+                      }
+
+                      // doctor message — title + description + optional View Medication
+                      final sheetTitle = title.isEmpty ? s.doctorMessage : title;
+                      final medName = data['medication'] as String?;
+                      final hasMed = medName != null && medName.isNotEmpty;
+
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _detailRow(Icons.medical_information_outlined,
                               sheetTitle, onSheet),
+                          if (body.isNotEmpty) ...[
+                            const SizedBox(height: 20),
+                            _detailRow(Icons.message_outlined, body, onSheet),
+                          ],
                           const SizedBox(height: 32),
-                          SizedBox(
-                            width: double.infinity,
-                            child: _closeBtn(
-                                s, onSheet, () => Navigator.pop(context)),
-                          ),
+                          if (hasMed)
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFF0F172A),
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 14),
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(12)),
+                                    ),
+                                    onPressed: () async {
+                                      Navigator.pop(context);
+                                      final medData =
+                                          await _fetchMedicationByName(
+                                              uid, medName);
+                                      if (medData != null && mounted) {
+                                        _goToMedicationDetails(medData);
+                                      }
+                                    },
+                                    child: Text(s.viewMedication,
+                                        style: const TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.w700)),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: _closeBtn(s, onSheet,
+                                      () => Navigator.pop(context)),
+                                ),
+                              ],
+                            )
+                          else
+                            SizedBox(
+                              width: double.infinity,
+                              child: _closeBtn(
+                                  s, onSheet, () => Navigator.pop(context)),
+                            ),
                         ],
                       );
                     }),
@@ -489,6 +550,24 @@ class NotificationsScreenState extends State<NotificationsScreen> {
           .doc(medDocId)
           .get();
       return snap.data();
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<Map<String, dynamic>?> _fetchMedicationByName(
+      String uid, String medName) async {
+    try {
+      final snap = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('medications')
+          .where('name', isEqualTo: medName)
+          .limit(1)
+          .get();
+      if (snap.docs.isEmpty) return null;
+      final doc = snap.docs.first;
+      return {'id': doc.id, ...doc.data()};
     } catch (e) {
       return null;
     }
