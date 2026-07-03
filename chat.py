@@ -57,7 +57,7 @@ async def _fetch_drug_info(drug_name: str) -> dict:
     return {"name": drug_name, "warnings": "No information available", "dosage_notes": ""}
 
 
-def _build_prompt(req: ChatRequest, drug_infos: list[dict]) -> str:
+def _build_system_prompt(req: ChatRequest, drug_infos: list[dict]) -> str:
     age_str = str(req.age) if req.age else "not specified"
     gender_str = req.gender or "not specified"
     conditions_str = ", ".join(req.conditions) if req.conditions else "none specified"
@@ -71,6 +71,8 @@ def _build_prompt(req: ChatRequest, drug_infos: list[dict]) -> str:
 
     return f"""You are a helpful and empathetic medical assistant. Answer the patient's question clearly and safely.
 
+IMPORTANT: You MUST reply in the exact same language the patient writes in. If they write in Arabic, reply in Arabic. If they write in Hebrew, reply in Hebrew. If they write in English, reply in English.
+
 Patient Profile:
 - Age: {age_str}
 - Gender: {gender_str}
@@ -81,18 +83,14 @@ Patient Profile:
 Drug Information (from FDA):
 {drug_info_text}
 
-Patient's Question:
-"{req.question}"
-
 Instructions:
-- Always respond in the same language the patient used in their question
 - Use simple, friendly language — no medical jargon
 - Personalize your answer using the patient's profile above
 - Do NOT prescribe medications or specific dosages
 - Do NOT diagnose medical conditions
 - If there is any health risk, clearly warn the patient and recommend consulting their doctor
 - Keep your answer to 2-4 sentences
-- If the topic involves any risk or uncertainty, end with: "Please consult your doctor if you have concerns."
+- If the topic involves any risk or uncertainty, end with a recommendation to consult their doctor (in the same language)
 """
 
 
@@ -106,7 +104,7 @@ async def chat(request: ChatRequest):
         if med.strip():
             drug_infos.append(await _fetch_drug_info(med.strip()))
 
-    prompt = _build_prompt(request, drug_infos)
+    system_prompt = _build_system_prompt(request, drug_infos)
 
     try:
         async with httpx.AsyncClient(timeout=30.0) as client:
@@ -118,7 +116,10 @@ async def chat(request: ChatRequest):
                 },
                 json={
                     "model": _MODEL,
-                    "messages": [{"role": "user", "content": prompt}],
+                    "messages": [
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": request.question},
+                    ],
                     "max_tokens": 300,
                     "temperature": 0.7,
                 },
@@ -153,7 +154,7 @@ class DoctorChatRequest(BaseModel):
     patients: list[PatientSummary] = []
 
 
-def _build_doctor_prompt(req: DoctorChatRequest, drug_infos: list[dict]) -> str:
+def _build_doctor_system_prompt(req: DoctorChatRequest, drug_infos: list[dict]) -> str:
     patient_lines = "\n".join(
         f"  - {p.name}: conditions — {', '.join(p.conditions) if p.conditions else 'none'}"
         f" | medications — {', '.join(p.medications) if p.medications else 'none'}"
@@ -167,17 +168,15 @@ def _build_doctor_prompt(req: DoctorChatRequest, drug_infos: list[dict]) -> str:
 
     return f"""You are an AI clinical assistant helping a doctor manage their patients' medication adherence and health outcomes.
 
+IMPORTANT: You MUST reply in the exact same language the doctor writes in. If they write in Arabic, reply in Arabic. If they write in Hebrew, reply in Hebrew. If they write in English, reply in English.
+
 Doctor's Patient Panel ({req.total_patients} patients):
 {patient_lines}
 
 Drug Information (from FDA):
 {drug_info_text}
 
-Doctor's Question:
-"{req.question}"
-
 Instructions:
-- Always respond in the same language the doctor used in their question
 - Use clear, professional clinical language appropriate for a doctor
 - You may discuss adherence patterns, medication interactions, and clinical insights
 - Reference specific patients by name when relevant to the question
@@ -202,7 +201,7 @@ async def doctor_chat(request: DoctorChatRequest):
     })
     drug_infos = await asyncio.gather(*[_fetch_drug_info(m) for m in unique_meds])
 
-    prompt = _build_doctor_prompt(request, list(drug_infos))
+    system_prompt = _build_doctor_system_prompt(request, list(drug_infos))
 
     try:
         async with httpx.AsyncClient(timeout=30.0) as client:
@@ -214,7 +213,10 @@ async def doctor_chat(request: DoctorChatRequest):
                 },
                 json={
                     "model": _MODEL,
-                    "messages": [{"role": "user", "content": prompt}],
+                    "messages": [
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": request.question},
+                    ],
                     "max_tokens": 400,
                     "temperature": 0.5,
                 },
