@@ -20,6 +20,17 @@ _GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 _MODEL = "llama-3.3-70b-versatile"
 
 
+def _detect_language(text: str) -> str:
+    """Detect language by Unicode character ranges. Returns language name for the prompt."""
+    arabic  = sum(1 for c in text if '؀' <= c <= 'ۿ')
+    hebrew  = sum(1 for c in text if '֐' <= c <= '׿')
+    if arabic > hebrew and arabic > 2:
+        return "Arabic"
+    if hebrew > arabic and hebrew > 2:
+        return "Hebrew"
+    return "English"
+
+
 class ChatRequest(BaseModel):
     question: str
     medications: list[str] = []
@@ -63,6 +74,7 @@ def _build_system_prompt(req: ChatRequest, drug_infos: list[dict]) -> str:
     conditions_str = ", ".join(req.conditions) if req.conditions else "none specified"
     meds_str = ", ".join(req.medications) if req.medications else "none"
     adherence_str = req.adherence_summary or "no adherence data available"
+    lang = _detect_language(req.question)
 
     drug_info_text = "\n".join(
         f"- {d['name']}: {d['warnings']}"
@@ -71,8 +83,7 @@ def _build_system_prompt(req: ChatRequest, drug_infos: list[dict]) -> str:
 
     return f"""You are a helpful and empathetic medical assistant. Answer the patient's question clearly and safely.
 
-IMPORTANT: You MUST reply in the exact same language the patient writes in. If they write in Arabic, reply in Arabic.
-           If they write in Hebrew, reply in Hebrew. If they write in English, reply in English.
+IMPORTANT: The patient is writing in {lang}. You MUST respond ONLY in {lang}. Do not use any other language.
 
 Patient Profile:
 - Age: {age_str}
@@ -166,11 +177,11 @@ def _build_doctor_system_prompt(req: DoctorChatRequest, drug_infos: list[dict]) 
         f"- {d['name']}: {d['warnings']}"
         for d in drug_infos
     ) or "No drug information available."
+    lang = _detect_language(req.question)
 
     return f"""You are an AI clinical assistant helping a doctor manage their patients' medication adherence and health outcomes.
 
-IMPORTANT: You MUST reply in the exact same language the doctor writes in. If they write in Arabic, reply in Arabic.
-           If they write in Hebrew, reply in Hebrew. If they write in English, reply in English.
+IMPORTANT: The doctor is writing in {lang}. You MUST respond ONLY in {lang}. Do not use any other language.
 
 Doctor's Patient Panel ({req.total_patients} patients):
 {patient_lines}
