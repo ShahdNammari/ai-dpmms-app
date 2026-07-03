@@ -22,8 +22,8 @@ _MODEL = "llama-3.3-70b-versatile"
 
 def _detect_language(text: str) -> str:
     """Detect language by Unicode character ranges. Returns language name for the prompt."""
-    arabic  = sum(1 for c in text if '؀' <= c <= 'ۿ')
-    hebrew  = sum(1 for c in text if '֐' <= c <= '׿')
+    arabic = sum(1 for c in text if '؀' <= c <= 'ۿ')
+    hebrew = sum(1 for c in text if '֐' <= c <= '׿')
     if arabic > hebrew and arabic > 2:
         return "Arabic"
     if hebrew > arabic and hebrew > 2:
@@ -151,7 +151,7 @@ async def chat(request: ChatRequest):
         raise HTTPException(status_code=500, detail=f"AI service error: {str(e)}")
 
 
-# ── Doctor Chat ───────────────────────────────────────────────────────────────
+# Doctor Chat
 
 class PatientSummary(BaseModel):
     name: str
@@ -249,7 +249,7 @@ async def doctor_chat(request: DoctorChatRequest):
         raise HTTPException(status_code=500, detail=f"AI service error: {str(e)}")
 
 
-# ── AI Alert Analysis ─────────────────────────────────────────────────────────
+# AI Alert Analysis
 
 class AnalyzeRequest(BaseModel):
     patient_name: str
@@ -288,9 +288,8 @@ Last 7 days:
 - Consecutive missed doses: {req.consecutive_missed}
 
 Rules:
-- Adherence < 50% OR consecutive missed >= 3 OR (insulin/diabetes medication missed 2+ times) → ALERT with severity "critical"
-- Adherence 50–70% OR consecutive missed == 2 → ALERT with severity "warning"
-- Adherence > 70% AND consecutive missed <= 1 → NO alert
+- Adherence <= 50% → ALERT with severity "critical"
+- Adherence > 50% → NO alert
 - If no doses recorded yet (total=0) → NO alert
 
 Respond ONLY in this exact JSON format (no extra text):
