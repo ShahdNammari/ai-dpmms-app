@@ -228,11 +228,30 @@ class _PatientShellState extends State<PatientShell> {
                   selected: _index == 1,
                   onTap: () => _onTap(1),
                 ),
-                _NavItem(
-                  icon: Icons.notifications_none,
-                  selectedIcon: Icons.notifications,
-                  selected: _index == 2,
-                  onTap: () => _onTap(2),
+                StreamBuilder<int>(
+                  stream: FirebaseAuth.instance.currentUser == null
+                      ? Stream.value(0)
+                      : FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(FirebaseAuth.instance.currentUser!.uid)
+                            .collection('inbox_notifications')
+                            .where('read', isEqualTo: false)
+                            .snapshots()
+                            .map((s) {
+                              final now = DateTime.now();
+                              return s.docs.where((d) {
+                                final ts = d.data()['event_time'] as Timestamp?;
+                                if (ts == null) return false;
+                                return !ts.toDate().isAfter(now);
+                              }).length;
+                            }),
+                  builder: (context, snap) => _NavItem(
+                    icon: Icons.notifications_none,
+                    selectedIcon: Icons.notifications,
+                    selected: _index == 2,
+                    onTap: () => _onTap(2),
+                    badge: snap.data ?? 0,
+                  ),
                 ),
                 _NavItem(
                   icon: Icons.bar_chart_outlined,
@@ -255,12 +274,14 @@ class _NavItem extends StatelessWidget {
   final IconData selectedIcon;
   final bool selected;
   final VoidCallback onTap;
+  final int badge;
 
   const _NavItem({
     required this.icon,
     required this.selectedIcon,
     required this.selected,
     required this.onTap,
+    this.badge = 0,
   });
 
   @override
@@ -284,10 +305,38 @@ class _NavItem extends StatelessWidget {
           color: selected ? selectedBg : Colors.transparent,
           borderRadius: BorderRadius.circular(22),
         ),
-        child: Icon(
-          selected ? selectedIcon : icon,
-          color: selected ? activeColor : inactiveColor,
-          size: 26,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Icon(
+              selected ? selectedIcon : icon,
+              color: selected ? activeColor : inactiveColor,
+              size: 26,
+            ),
+            if (badge > 0)
+              Positioned(
+                right: -7,
+                top: -5,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFDC2626),
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                  child: Text(
+                    badge > 99 ? '99+' : '$badge',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800,
+                      height: 1.2,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+          ],
         ),
       ),
     );
