@@ -7,7 +7,7 @@ import 'package:intl/intl.dart';
 class ChatService {
   // Use your computer's local IP when testing on a physical device
   // Run: (Get-NetIPAddress -AddressFamily IPv4 -InterfaceAlias Wi-Fi).IPAddress
-  static const _baseUrl = 'http://172.20.10.3:8000';
+  static const _baseUrl = 'https://ai-dpmms-app.onrender.com';
 
   static Future<String> ask(String question) async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
