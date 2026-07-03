@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 
 import '../../l10n/app_strings.dart';
 import '../../models/medication.dart';
+import '../../services/medications_service.dart';
 import '../../services/report_service.dart';
 import '../patient/medication_form_screen.dart';
 import 'doctor_reports_tab.dart';
@@ -303,12 +304,11 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
     if (confirmed != true || !mounted) return;
 
     try {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(widget.patientUid)
-          .collection('medications')
-          .doc(med.id)
-          .delete();
+      await MedicationsService().deleteMedicationForFuture(
+        uid: widget.patientUid,
+        med: med,
+        effectiveDate: DateTime.now(),
+      );
       _loadData();
     } catch (e) {
       if (!mounted) return;
