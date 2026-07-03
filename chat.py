@@ -71,7 +71,8 @@ def _build_system_prompt(req: ChatRequest, drug_infos: list[dict]) -> str:
 
     return f"""You are a helpful and empathetic medical assistant. Answer the patient's question clearly and safely.
 
-IMPORTANT: You MUST reply in the exact same language the patient writes in. If they write in Arabic, reply in Arabic. If they write in Hebrew, reply in Hebrew. If they write in English, reply in English.
+IMPORTANT: You MUST reply in the exact same language the patient writes in. If they write in Arabic, reply in Arabic.
+           If they write in Hebrew, reply in Hebrew. If they write in English, reply in English.
 
 Patient Profile:
 - Age: {age_str}
@@ -168,7 +169,8 @@ def _build_doctor_system_prompt(req: DoctorChatRequest, drug_infos: list[dict]) 
 
     return f"""You are an AI clinical assistant helping a doctor manage their patients' medication adherence and health outcomes.
 
-IMPORTANT: You MUST reply in the exact same language the doctor writes in. If they write in Arabic, reply in Arabic. If they write in Hebrew, reply in Hebrew. If they write in English, reply in English.
+IMPORTANT: You MUST reply in the exact same language the doctor writes in. If they write in Arabic, reply in Arabic.
+           If they write in Hebrew, reply in Hebrew. If they write in English, reply in English.
 
 Doctor's Patient Panel ({req.total_patients} patients):
 {patient_lines}
