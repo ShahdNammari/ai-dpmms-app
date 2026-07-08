@@ -59,11 +59,36 @@ class _PatientShellState extends State<PatientShell> {
   }
 
   void _onTap(int i) {
+    if (i == 2) unawaited(_markAllNotificationsSeen());
     if (_index == i) {
       AppRefresh.trigger();
       return;
     }
     setState(() => _index = i);
+  }
+
+  Future<void> _markAllNotificationsSeen() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final now = DateTime.now();
+    final all = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .collection('inbox_notifications')
+        .get();
+
+    final batch = FirebaseFirestore.instance.batch();
+    var hasUpdates = false;
+    for (final doc in all.docs) {
+      final data = doc.data();
+      if (data['seen'] == true) continue;
+      final ts = data['event_time'] as Timestamp?;
+      if (ts == null || ts.toDate().isAfter(now)) continue;
+      batch.update(doc.reference, {'seen': true});
+      hasUpdates = true;
+    }
+    if (hasUpdates) await batch.commit();
   }
 
   Widget _buildCurrentPage() {
@@ -235,12 +260,13 @@ class _PatientShellState extends State<PatientShell> {
                             .collection('users')
                             .doc(FirebaseAuth.instance.currentUser!.uid)
                             .collection('inbox_notifications')
-                            .where('read', isEqualTo: false)
                             .snapshots()
                             .map((s) {
                               final now = DateTime.now();
                               return s.docs.where((d) {
-                                final ts = d.data()['event_time'] as Timestamp?;
+                                final data = d.data();
+                                if (data['seen'] == true) return false;
+                                final ts = data['event_time'] as Timestamp?;
                                 if (ts == null) return false;
                                 return !ts.toDate().isAfter(now);
                               }).length;

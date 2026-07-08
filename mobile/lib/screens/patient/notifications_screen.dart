@@ -60,7 +60,6 @@ class NotificationsScreenState extends State<NotificationsScreen> {
     } catch (e) {
       rethrow;
     }
-    AppRefresh.trigger();
   }
 
   Future<void> _onRefresh() async {
@@ -177,7 +176,7 @@ class NotificationsScreenState extends State<NotificationsScreen> {
                   return InkWell(
                     borderRadius: BorderRadius.circular(18),
                     onTap: () async {
-                      await _markRead(uid, d.id);
+                      if (!read) await _markRead(uid, d.id);
                       if (!mounted) return;
                       _showNotificationDetails(
                         uid: uid,
