@@ -4,6 +4,7 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest_all.dart' as tzdata;
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class NotificationService {
   NotificationService._();
@@ -13,6 +14,7 @@ class NotificationService {
       FlutterLocalNotificationsPlugin();
 
   bool _inited = false;
+  bool _canScheduleExact = false;
   GlobalKey<NavigatorState>? navigatorKey;
 
   Future<void> init({required GlobalKey<NavigatorState> navKey}) async {
@@ -30,10 +32,33 @@ class NotificationService {
       },
     );
 
-    await _plugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-        ?.requestNotificationsPermission();
+    final androidImpl = _plugin.resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin>();
+
+    await androidImpl?.requestNotificationsPermission();
+
+    // Android 12+ (API 31+) revokes SCHEDULE_EXACT_ALARM by default; without
+    // this the plugin throws when scheduling with exactAllowWhileIdle and the
+    // reminder is silently never registered with AlarmManager.
+    try {
+      _canScheduleExact =
+          await androidImpl?.requestExactAlarmsPermission() ?? false;
+    } catch (e) {
+      _canScheduleExact = false;
+      debugPrint('NotificationService: exact alarm permission check failed: $e');
+    }
+
+    // Ask the OS not to kill the app in the background. Without this, Doze /
+    // OEM battery managers can put the app into a "stopped" state; when a
+    // scheduled alarm then fires, the plugin's receiver crashes the process
+    // (unfixed upstream bug in flutter_local_notifications).
+    try {
+      if (!await Permission.ignoreBatteryOptimizations.isGranted) {
+        await Permission.ignoreBatteryOptimizations.request();
+      }
+    } catch (e) {
+      debugPrint('NotificationService: battery optimization request failed: $e');
+    }
 
     tzdata.initializeTimeZones();
     final String localTz = await FlutterTimezone.getLocalTimezone();
@@ -108,17 +133,23 @@ class NotificationService {
           final payload =
               '$uid|$medDocId|$medName|${when.millisecondsSinceEpoch}|$ti|${times[ti]}';
 
-          dayFutures.add(_plugin.zonedSchedule(
-            _id(medDocId, dayOffset, ti),
-            'Medication Reminder',
-            'Time to take $medName',
-            tzWhen,
-            details,
-            androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-            uiLocalNotificationDateInterpretation:
-                UILocalNotificationDateInterpretation.absoluteTime,
-            payload: payload,
-          ));
+          dayFutures.add(_plugin
+              .zonedSchedule(
+                _id(medDocId, dayOffset, ti),
+                'Medication Reminder',
+                'Time to take $medName',
+                tzWhen,
+                details,
+                androidScheduleMode: _canScheduleExact
+                    ? AndroidScheduleMode.exactAllowWhileIdle
+                    : AndroidScheduleMode.inexactAllowWhileIdle,
+                uiLocalNotificationDateInterpretation:
+                    UILocalNotificationDateInterpretation.absoluteTime,
+                payload: payload,
+              )
+              .catchError((Object e) {
+            debugPrint('NotificationService: failed to schedule $payload: $e');
+          }));
 
           if (!when.isAfter(inboxWriteUntil)) {
             final inboxId =
@@ -166,7 +197,7 @@ class NotificationService {
         }
       }
     } catch (e) {
-      rethrow;
+      debugPrint('NotificationService: scheduleMedicationRange failed: $e');
     }
   }
 
@@ -187,7 +218,7 @@ class NotificationService {
         }
       }
     } catch (e) {
-      rethrow;
+      debugPrint('NotificationService: cancelMedicationNotifications failed: $e');
     }
   }
 
@@ -220,7 +251,7 @@ class NotificationService {
         navigatorKey?.currentState?.pushNamed('/notifications');
       }
     } catch (e) {
-      rethrow;
+      debugPrint('NotificationService: _handleNotificationTap failed: $e');
     }
   }
 
