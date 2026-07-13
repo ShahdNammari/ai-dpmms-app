@@ -545,8 +545,7 @@ class _PatientDetailsScreenState extends State<PatientDetailsScreen> {
     }
 
     if (_loading) {
-      return const Center(
-          child: CircularProgressIndicator(color: Colors.white));
+      return const _SkeletonPatientDetails();
     }
 
     final meds = _data!.medications;
@@ -799,6 +798,96 @@ class _DetailRow extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+// Skeleton loading
+
+class _SkeletonPatientDetails extends StatefulWidget {
+  const _SkeletonPatientDetails();
+
+  @override
+  State<_SkeletonPatientDetails> createState() =>
+      _SkeletonPatientDetailsState();
+}
+
+class _SkeletonPatientDetailsState extends State<_SkeletonPatientDetails>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _ctrl;
+  late final Animation<double> _opacity;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 900))
+      ..repeat(reverse: true);
+    _opacity = Tween(begin: 0.4, end: 0.85).animate(
+      CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  Widget _box({double? width, required double height, double radius = 6}) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(radius),
+      ),
+    );
+  }
+
+  Widget _skeletonCard() {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(18, 14, 14, 16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E293B),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              _box(width: 20, height: 20, radius: 5),
+              const SizedBox(width: 10),
+              Expanded(child: _box(height: 16, radius: 6)),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Divider(height: 1, color: Colors.white.withValues(alpha: 0.08)),
+          const SizedBox(height: 10),
+          _box(height: 12, width: 140, radius: 5),
+          const SizedBox(height: 8),
+          _box(height: 12, width: 110, radius: 5),
+          const SizedBox(height: 8),
+          _box(height: 12, width: 160, radius: 5),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _opacity,
+      builder: (_, _) => Opacity(
+        opacity: _opacity.value,
+        child: ListView.separated(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+          itemCount: 3,
+          separatorBuilder: (_, _) => const SizedBox(height: 12),
+          itemBuilder: (_, _) => _skeletonCard(),
+        ),
+      ),
     );
   }
 }

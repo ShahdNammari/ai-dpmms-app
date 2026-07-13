@@ -101,8 +101,9 @@ class _DoctorPatientsTabState extends State<DoctorPatientsTab> {
     final q = _searchQuery;
     var list = _patients.where((p) {
       if (q.isNotEmpty && !p.name.toLowerCase().contains(q)) return false;
-      if (_filter == 'atRisk' && !((p.adherence <= 0.7 && p.daysSinceLastDose >= 3) || p.adherence <= 0.5)) return false;
-      if (_filter == 'adherent' && p.adherence < 0.7) return false;
+      final isAtRisk = (p.adherence <= 0.7 && p.daysSinceLastDose >= 3) || p.adherence <= 0.5;
+      if (_filter == 'atRisk' && !isAtRisk) return false;
+      if (_filter == 'adherent' && isAtRisk) return false;
       return true;
     }).toList();
 

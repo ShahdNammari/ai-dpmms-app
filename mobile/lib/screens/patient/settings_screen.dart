@@ -157,8 +157,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     };
 
     final langLabel = switch (_settings.locale.languageCode) {
-      'ar' => 'Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©',
-      'he' => '×¢×‘×¨×™×ª',
+      'ar' => 'العربية - Arabic',
+      'he' => 'עברית - Hebrew',
       _ => 'English',
     };
 
@@ -514,11 +514,11 @@ class _LanguagePickerSheet extends StatefulWidget {
 class _LanguagePickerSheetState extends State<_LanguagePickerSheet> {
   late String _selectedCode;
 
-  // Native name â€¢ English name  (intentionally NOT translated)
+  // Native name English name  (intentionally NOT translated)
   static const _langs = [
-    (code: 'en', display: 'English  â€¢  English'),
-    (code: 'ar', display: 'Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©  â€¢  Arabic'),
-    (code: 'he', display: '×¢×‘×¨×™×ª  â€¢  Hebrew'),
+    (code: 'en', display: 'English - English'),
+    (code: 'ar', display: 'العربية - Arabic'),
+    (code: 'he', display: 'עברית - Hebrew'),
   ];
 
   @override

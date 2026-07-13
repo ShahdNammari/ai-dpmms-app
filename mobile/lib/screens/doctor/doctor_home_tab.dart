@@ -366,7 +366,7 @@ class _DoctorHomeTabState extends State<DoctorHomeTab> {
           final stats = snap.data;
           final loading = snap.connectionState != ConnectionState.done;
           final atRisk = stats?.where((s) => (s.adherence <= 0.7 && s.daysSinceLastDose >= 3) || s.adherence <= 0.5).toList() ?? [];
-          final adherent = stats?.where((s) => s.adherence >= 0.7).toList() ?? [];
+          final adherent = stats?.where((s) => !atRisk.contains(s)).toList() ?? [];
 
           return SingleChildScrollView(
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 18),

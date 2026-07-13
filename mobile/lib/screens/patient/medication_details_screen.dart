@@ -30,6 +30,21 @@ class _MedicationDetailsScreenState extends State<MedicationDetailsScreen> {
   static const Color _red   = Color(0xFFDC2626);
   static const Color _green = Color(0xFF16A34A);
 
+  bool _loading = true;
+  List<_ActivityItem> _activity = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadRecentActivity().then((items) {
+      if (!mounted) return;
+      setState(() {
+        _activity = items;
+        _loading = false;
+      });
+    });
+  }
+
   Future<void> _confirmDelete() async {
     final s       = S.of(context);
     final service = MedicationsService();
@@ -221,163 +236,157 @@ class _MedicationDetailsScreenState extends State<MedicationDetailsScreen> {
 
                           const SizedBox(height: 14),
 
-                          // Main info
-                          _card(child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              _row(Icons.medication_outlined, med.name),
-                              const SizedBox(height: 10),
-                              _row(Icons.science_outlined, med.dosage),
-                            ],
-                          )),
+                          if (_loading)
+                            const _SkeletonMedicationBody()
+                          else ...[
+                            // Main info
+                            _card(child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _row(Icons.medication_outlined, med.name),
+                                const SizedBox(height: 10),
+                                _row(Icons.science_outlined, med.dosage),
+                              ],
+                            )),
 
-                          const SizedBox(height: 18),
+                            const SizedBox(height: 18),
 
-                          _SectionTitle(s.scheduleLabel),
-                          const SizedBox(height: 8),
-                          _card(child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(_timeText,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w800,
-                                    color: Color(0xFF0F172A),
-                                  )),
-                              const SizedBox(height: 6),
-                              Text(_scheduleText(s),
-                                  style: const TextStyle(
-                                    color: Color(0xFF334155),
-                                    fontWeight: FontWeight.w600,
-                                  )),
-                            ],
-                          )),
-
-                          const SizedBox(height: 18),
-
-                          _SectionTitle(s.repeatLabel),
-                          const SizedBox(height: 8),
-                          _card(child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(_repeatText(s),
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w700,
-                                    color: Color(0xFF334155),
-                                  )),
-                              const SizedBox(height: 10),
-                              _RepeatDaysRow(repeatDays: med.repeatDays),
-                            ],
-                          )),
-
-                          const SizedBox(height: 18),
-
-                          _card(child: Row(
-                            children: [
-                              const Icon(Icons.notifications_outlined),
-                              const SizedBox(width: 10),
-                              Text(s.reminderLabel,
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.w700)),
-                              const Spacer(),
-                              Switch(
-                                value: med.reminderEnabled,
-                                onChanged: null,
-                                thumbColor:
-                                    WidgetStateProperty.all(Colors.white),
-                                trackColor:
-                                    WidgetStateProperty.resolveWith((states) {
-                                  if (states.contains(WidgetState.selected)) {
-                                    return _green;
-                                  }
-                                  return Colors.grey;
-                                }),
-                              ),
-                            ],
-                          )),
-
-                          const SizedBox(height: 18),
-
-                          _SectionTitle(s.noteLabel),
-                          const SizedBox(height: 8),
-                          _card(child: Text(
-                            (med.notes?.trim().isNotEmpty ?? false)
-                                ? med.notes!.trim()
-                                : '-',
-                            style: const TextStyle(
-                              color: Color(0xFF0F172A),
-                              fontWeight: FontWeight.w600,
-                            ),
-                          )),
-
-                          const SizedBox(height: 18),
-
-                          _SectionTitle(s.recentActivity),
-                          const SizedBox(height: 8),
-                          _card(
-                            child: FutureBuilder<List<_ActivityItem>>(
-                              future: _loadRecentActivity(),
-                              builder: (context, snap) {
-                                if (snap.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return const _SkeletonActivityRows();
-                                }
-
-                                final items = snap.data ?? [];
-
-                                if (items.isEmpty) {
-                                  return Text(
-                                    s.noRecentActivity,
+                            _SectionTitle(s.scheduleLabel),
+                            const SizedBox(height: 8),
+                            _card(child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(_timeText,
                                     style: const TextStyle(
-                                      color: Color(0xFF64748B),
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w800,
+                                      color: Color(0xFF0F172A),
+                                    )),
+                                const SizedBox(height: 6),
+                                Text(_scheduleText(s),
+                                    style: const TextStyle(
+                                      color: Color(0xFF334155),
                                       fontWeight: FontWeight.w600,
-                                    ),
-                                  );
-                                }
+                                    )),
+                              ],
+                            )),
 
-                                return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: items
-                                      .map((e) => Padding(
-                                            padding: const EdgeInsets.only(
-                                                bottom: 6),
-                                            child: Row(
-                                              children: [
-                                                Container(
-                                                  width: 8,
-                                                  height: 8,
-                                                  decoration: BoxDecoration(
-                                                    color: e.color,
-                                                    shape: BoxShape.circle,
-                                                  ),
+                            const SizedBox(height: 18),
+
+                            _SectionTitle(s.repeatLabel),
+                            const SizedBox(height: 8),
+                            _card(child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(_repeatText(s),
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                      color: Color(0xFF334155),
+                                    )),
+                                const SizedBox(height: 10),
+                                _RepeatDaysRow(repeatDays: med.repeatDays),
+                              ],
+                            )),
+
+                            const SizedBox(height: 18),
+
+                            _card(child: Row(
+                              children: [
+                                const Icon(Icons.notifications_outlined),
+                                const SizedBox(width: 10),
+                                Text(s.reminderLabel,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.w700)),
+                                const Spacer(),
+                                Switch(
+                                  value: med.reminderEnabled,
+                                  onChanged: null,
+                                  thumbColor:
+                                      WidgetStateProperty.all(Colors.white),
+                                  trackColor:
+                                      WidgetStateProperty.resolveWith((states) {
+                                    if (states.contains(WidgetState.selected)) {
+                                      return _green;
+                                    }
+                                    return Colors.grey;
+                                  }),
+                                ),
+                              ],
+                            )),
+
+                            const SizedBox(height: 18),
+
+                            _SectionTitle(s.noteLabel),
+                            const SizedBox(height: 8),
+                            _card(child: Text(
+                              (med.notes?.trim().isNotEmpty ?? false)
+                                  ? med.notes!.trim()
+                                  : '-',
+                              style: const TextStyle(
+                                color: Color(0xFF0F172A),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            )),
+
+                            const SizedBox(height: 18),
+
+                            _SectionTitle(s.recentActivity),
+                            const SizedBox(height: 8),
+                            _card(
+                              child: _activity.isEmpty
+                                  ? Text(
+                                      s.noRecentActivity,
+                                      style: const TextStyle(
+                                        color: Color(0xFF64748B),
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    )
+                                  : Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: _activity
+                                          .map((e) => Padding(
+                                                padding: const EdgeInsets.only(
+                                                    bottom: 6),
+                                                child: Row(
+                                                  children: [
+                                                    Container(
+                                                      width: 8,
+                                                      height: 8,
+                                                      decoration: BoxDecoration(
+                                                        color: e.color,
+                                                        shape: BoxShape.circle,
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 8),
+                                                    Text(
+                                                      '${_formatShortDate(e.date)}  ${e.time}',
+                                                      style: const TextStyle(
+                                                        color:
+                                                            Color(0xFF334155),
+                                                        fontSize: 13,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                      ),
+                                                    ),
+                                                    const Spacer(),
+                                                    Text(
+                                                      e.label,
+                                                      style: TextStyle(
+                                                        color: e.color,
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                        fontSize: 13,
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
-                                                const SizedBox(width: 8),
-                                                Text(
-                                                  '${_formatShortDate(e.date)}  ${e.time}',
-                                                  style: const TextStyle(
-                                                    color: Color(0xFF334155),
-                                                    fontSize: 13,
-                                                    fontWeight: FontWeight.w600,
-                                                  ),
-                                                ),
-                                                const Spacer(),
-                                                Text(
-                                                  e.label,
-                                                  style: TextStyle(
-                                                    color: e.color,
-                                                    fontWeight: FontWeight.w700,
-                                                    fontSize: 13,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ))
-                                      .toList(),
-                                );
-                              },
+                                              ))
+                                          .toList(),
+                                    ),
                             ),
-                          ),
+                          ],
                         ],
                       ),
                     ),
@@ -506,17 +515,20 @@ class _ActivityItem {
 
 // Skeleton loading
 
-class _SkeletonActivityRows extends StatefulWidget {
-  const _SkeletonActivityRows();
+class _SkeletonMedicationBody extends StatefulWidget {
+  const _SkeletonMedicationBody();
 
   @override
-  State<_SkeletonActivityRows> createState() => _SkeletonActivityRowsState();
+  State<_SkeletonMedicationBody> createState() =>
+      _SkeletonMedicationBodyState();
 }
 
-class _SkeletonActivityRowsState extends State<_SkeletonActivityRows>
+class _SkeletonMedicationBodyState extends State<_SkeletonMedicationBody>
     with SingleTickerProviderStateMixin {
   late final AnimationController _ctrl;
   late final Animation<double> _opacity;
+
+  static const _boxColor = Color(0x24FFFFFF); // white @ ~14% alpha
 
   @override
   void initState() {
@@ -535,62 +547,144 @@ class _SkeletonActivityRowsState extends State<_SkeletonActivityRows>
     super.dispose();
   }
 
-  Widget _box({double? width, required double height, double radius = 7}) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+  Widget _box({double? width, required double height, double radius = 6}) {
     return Container(
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF252830) : const Color(0xFFE2E8F0),
+        color: _boxColor,
         borderRadius: BorderRadius.circular(radius),
       ),
     );
   }
 
+  Widget _card({required Widget child}) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E293B),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: child,
+    );
+  }
+
+  Widget _sectionTitleSkeleton() =>
+      _box(height: 14, width: 90, radius: 5);
+
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return AnimatedBuilder(
       animation: _opacity,
       builder: (_, _) => Opacity(
         opacity: _opacity.value,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: List.generate(
-            3,
-            (_) => Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: Row(
-                children: [
-                  Container(
-                    width: 28,
-                    height: 28,
-                    decoration: BoxDecoration(
-                      color: isDark
-                          ? const Color(0xFF252830)
-                          : const Color(0xFFE2E8F0),
-                      shape: BoxShape.circle,
-                    ),
-                  ),
+          children: [
+            // Main info
+            _card(child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(children: [
+                  _box(width: 20, height: 20, radius: 5),
                   const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _box(height: 11, width: 120, radius: 6),
-                        const SizedBox(height: 5),
-                        _box(height: 9, width: 80, radius: 5),
-                      ],
-                    ),
+                  Expanded(child: _box(height: 14, radius: 5)),
+                ]),
+                const SizedBox(height: 12),
+                Row(children: [
+                  _box(width: 20, height: 20, radius: 5),
+                  const SizedBox(width: 10),
+                  Expanded(child: _box(height: 14, width: 100, radius: 5)),
+                ]),
+              ],
+            )),
+
+            const SizedBox(height: 18),
+            _sectionTitleSkeleton(),
+            const SizedBox(height: 8),
+            _card(child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _box(height: 16, width: 130, radius: 5),
+                const SizedBox(height: 8),
+                _box(height: 12, width: 90, radius: 5),
+              ],
+            )),
+
+            const SizedBox(height: 18),
+            _sectionTitleSkeleton(),
+            const SizedBox(height: 8),
+            _card(child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _box(height: 14, width: 110, radius: 5),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: List.generate(
+                    7,
+                    (_) => const _CircleSkeleton(size: 34, color: _boxColor),
                   ),
-                  _box(width: 36, height: 9, radius: 5),
-                ],
+                ),
+              ],
+            )),
+
+            const SizedBox(height: 18),
+            _card(child: Row(
+              children: [
+                _box(width: 22, height: 22, radius: 6),
+                const SizedBox(width: 10),
+                _box(height: 14, width: 90, radius: 5),
+                const Spacer(),
+                _box(width: 36, height: 20, radius: 10),
+              ],
+            )),
+
+            const SizedBox(height: 18),
+            _sectionTitleSkeleton(),
+            const SizedBox(height: 8),
+            _card(child: _box(height: 14, width: 160, radius: 5)),
+
+            const SizedBox(height: 18),
+            _sectionTitleSkeleton(),
+            const SizedBox(height: 8),
+            _card(child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: List.generate(
+                3,
+                (_) => Padding(
+                  padding: const EdgeInsets.only(bottom: 6),
+                  child: Row(
+                    children: [
+                      const _CircleSkeleton(size: 8, color: _boxColor),
+                      const SizedBox(width: 8),
+                      _box(height: 12, width: 100, radius: 5),
+                      const Spacer(),
+                      _box(height: 12, width: 50, radius: 5),
+                    ],
+                  ),
+                ),
               ),
-            ),
-          ),
+            )),
+          ],
         ),
       ),
+    );
+  }
+}
+
+class _CircleSkeleton extends StatelessWidget {
+  final double size;
+  final Color color;
+  const _CircleSkeleton({required this.size, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
     );
   }
 }
