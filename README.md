@@ -184,23 +184,7 @@ passlib, bcrypt    # Password hashing
 
 AI-DPMMS uses a **Client–Server architecture** that separates the UI layer, business logic, and data layer — improving security, maintainability, and future extensibility.
 
-<div align="center">
-
-```mermaid
-graph TB
-    A[📱 Flutter Mobile App<br/>Patient / Doctor UI] --> B[🔐 Firebase Auth]
-    A --> C[🗄️ Cloud Firestore<br/>Users · Medications · Intake · Notifications · Reports]
-    A --> D[⚙️ FastAPI Backend]
-
-    D --> E[🤖 Groq AI<br/>Llama 3.3 70B]
-    D --> F[💊 OpenFDA API<br/>Drug Information]
-    D --> G[⚠️ Adherence Analysis Engine]
-
-    G --> H[🔔 Doctor Alerts]
-    B --> I[👤 Role-Based Access<br/>Patient / Doctor]
-```
-
-</div>
+*(screenshot coming soon)*
 
 - **Flutter (UI layer)** — cross-platform interface with separate patient and doctor experiences
 - **Firebase Auth** — user authentication and role-based access control
